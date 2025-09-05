@@ -1,14 +1,15 @@
 #pragma once
 
 
+#include <type_traits> // TODO remove dependency of std
 
 
 template<typename T>
-concept Integral = __is_integral(T);
+concept Integral = std::is_integral_v<T>;
 
 
 template<typename T>
-concept Floating = __is_floating_point(T);
+concept Floating = std::is_floating_point_v<T>;
 
 
 template<typename T>
@@ -16,11 +17,11 @@ concept Boolean = __is_same(T, bool);
 
 
 template<typename T>
-concept Pointer = __is_pointer(T);
+concept Pointer = std::is_pointer_v<T>;
 
 
 template<typename T>
-concept Reference = __is_lvalue_reference(T) or __is_rvalue_reference(T);
+concept Reference = std::is_reference_v<T>;
 
 
 template<typename T>

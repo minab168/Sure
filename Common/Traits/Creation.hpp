@@ -18,17 +18,17 @@ concept CopyConstructible = requires(T t) { T(t); T{t}; };
 
 
 template<typename T>
-concept MoveConstructible = requires(T t) { T((T&&)t); T{(T&&)t}; };
+concept MoveConstructible = requires(T t) { T(static_cast<T&&>(t)); T{static_cast<T&&>(t)}; };
 
 
 
 template<typename T>
-concept CopyAssignable = requires(T t, T u) { { t = u } -> Destructible; };
+concept CopyAssignable = requires(T t, T u) { { t = u }; };
 
 
 
 template<typename T>
-concept MoveAssignable = requires(T t, T u) { { t = (T&&)(u) } -> Destructible; };
+concept MoveAssignable = requires(T t, T u) { { t = static_cast<T&&>(u) }; };
 
 
 

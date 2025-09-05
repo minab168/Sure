@@ -29,19 +29,19 @@ concept Resizable = requires(T t) {
 
 template<typename I>
 concept ForwardIterable = requires(I i) {
-    { ++i } -> ForwardIterable;
+    { ++i };
 };
 
 
 
 template<typename I>
 concept BidirectionalIterable = ForwardIterable<I> and requires(I i) {
-    { --i } -> BidirectionalIterable;
+    { --i };
 };
 
 
 
 template<typename I>
 concept RandomAccessIterable = BidirectionalIterable<I> and requires(I i, int n) {
-    { i + n } -> RandomAccessIterable;
+    { i + n };
 };

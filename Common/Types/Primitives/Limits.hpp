@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "./Primitives.hpp"
+#include "Inc.hpp"
 
 
 #define I_MIN_(type_) ((type_)(~((type_)0) >> 1 ) + 1)
@@ -31,14 +31,14 @@
 
 
 #define I64_MIN I_MIN_(I64)
-#define I64_MIN U_MIN_(U64)
+#define U64_MIN U_MIN_(U64)
 #define I64_MAX I_MAX_(I64)
-#define I64_MAX U_MAX_(U64)
+#define U64_MAX U_MAX_(U64)
 
 
 #if defined(__SIZEOF_INT128__)
     #define I128_MIN I_MIN_(I128)
-    #define I128_MIN U_MIN_(U128)
+    #define U128_MIN U_MIN_(U128)
     #define I128_MAX I_MAX_(I128)
-    #define I128_MAX U_MAX_(U128)
+    #define U128_MAX U_MAX_(U128)
 #endif

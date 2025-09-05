@@ -1,11 +1,13 @@
 #pragma once
 
 
-template<typename T> struct RemoveRef { typedef T type; };
-
-template<typename T> struct RemoveRef<T&> { typedef T type; };
-
-template<typename T> struct RemoveRef<T&&> { typedef T type; };
+#if __has_builtin(__remove_reference)
+    template<typename T> struct RemoveRef { using type = __remove_reference(T); };
+#else
+    template<typename T> struct RemoveRef { using type = T; };
+    template<typename T> struct RemoveRef<T&> { using type = T; };
+    template<typename T> struct RemoveRef<T&&> { using type = T; };
+#endif
 
 
 template<typename T> struct RemoveConst { typedef T Type; };

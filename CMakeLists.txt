@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Sure LANGUAGE CXX)
+project(Sure LANGUAGES CXX)
 
 
 set(CMAKE_CXX_STANDARD 23)
@@ -11,13 +11,13 @@ if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
 endif()
 
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $(CMAKE_BINARY_DIR)/Build/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $(CMAKE_BINARY_DIR)/Build/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $(CMAKE_BINARY_DIR)/Build/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Build/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Build/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Build/bin)
 
 
 enable_testing()
 
 
 add_subdirectory(Common)
-# add_subdirectory(External/googletest)
+add_subdirectory(Contribs/googletest)

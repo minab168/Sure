@@ -1,0 +1,16 @@
+# ──────────────────────────────────────────────
+# Project   : Sure
+# File      : CMakeLists.txt
+# Author    : Emad Redwan
+# Created   : 9/4/25
+# License   : MIT
+# ──────────────────────────────────────────────
+
+
+add_library(Base
+    INTERFACE
+    Compiler.hpp
+    Inc.hpp
+    Lang.hpp
+    Platform.hpp
+)

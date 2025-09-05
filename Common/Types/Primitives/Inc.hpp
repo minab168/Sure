@@ -1,7 +1,9 @@
 #pragma once
 
 
-#include "../Base/Inc.hpp"
+#include "../../Base/Inc.hpp"
+#include "Limits.hpp"
+#include "Size.hpp"
 
 
 // -------------------------------- Primitive types ---------------------------------
