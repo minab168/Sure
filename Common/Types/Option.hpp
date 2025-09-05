@@ -7,6 +7,40 @@
 #include "../Traits/Inc.hpp"
 
 
+template<typename RefT>
+  requires (not Reference<RefT>)
+class OptionRef final: NoDefaultCopy {
+    Bool _has_value = false;
+    RefT* _ptr = NULL_PTR;
+
+    constexpr explicit OptionRef(RefT& ref) noexcept;
+
+
+  public:
+    constexpr OptionRef() noexcept = default;
+
+    constexpr OptionRef(OptionRef&&) noexcept;
+
+    static OptionRef some(RefT& ref) noexcept;
+
+    static OptionRef none() noexcept;
+
+    NODISCARD_
+    Bool is_some() const& noexcept;
+
+    NODISCARD_
+    Bool is_none() const& noexcept;
+
+    NODISCARD_
+    RefT& value_or_abort() const&& noexcept;
+
+    NODISCARD_
+    RefT& value_or_abort() && noexcept;
+
+    OptionRef& operator=(OptionRef&&) noexcept;
+};
+
+
 template<typename ValueT>
   requires DefaultConstructible<ValueT> and Movable<ValueT>
 class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
@@ -40,50 +74,99 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
     ValueT value_or_default() && noexcept;
 
     NODISCARD_
+    ValueT value_or_abort() && noexcept;
+
+    NODISCARD_
     ValueT take() & noexcept;
 
     NODISCARD_
-    const ValueT& as_ref() const& noexcept;
+    OptionRef<const ValueT> as_ref() const& noexcept
+    requires (not Reference<ValueT>);
 
     NODISCARD_
-    ValueT& as_mut() & noexcept;
+    OptionRef<ValueT> as_mut() & noexcept
+    requires (not Reference<ValueT>);
 
     Option& operator=(Option&&) noexcept;
 };
 
 
+// ========================================================================
+
+
 template<typename RefT>
   requires (not Reference<RefT>)
-class OptionRef final: NoDefaultCopy {
-    Bool _has_value = false;
-    RefT* _ptr = NULL_PTR;
-
-    constexpr explicit OptionRef(RefT& ref) noexcept;
-
-
-  public:
-    constexpr OptionRef() noexcept = default;
-
-    constexpr OptionRef(OptionRef&&) noexcept;
-
-    static OptionRef some(RefT& ref) noexcept;
-
-    static OptionRef none() noexcept;
-
-    NODISCARD_
-    Bool is_some() const& noexcept;
-
-    NODISCARD_
-    Bool is_none() const& noexcept;
-
-    NODISCARD_
-    RefT& value_or(RefT fallback) const& noexcept;
-
-    OptionRef& operator=(OptionRef&&) noexcept;
-};
+constexpr OptionRef<RefT>::OptionRef(RefT& ref) noexcept:
+    _has_value(true),
+    _ptr(&ref)
+{ }
 
 
-// ========================================================================
+template<typename RefT>
+  requires (not Reference<RefT>)
+constexpr OptionRef<RefT>::OptionRef(OptionRef&& obj) noexcept:
+    _has_value(true),
+    _ptr(obj._ptr)
+{
+    obj._ptr = nullptr;
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+OptionRef<RefT> OptionRef<RefT>::some(RefT& ref) noexcept {
+    return OptionRef(ref);
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+OptionRef<RefT> OptionRef<RefT>::none() noexcept {
+    return OptionRef<RefT>();
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+Bool OptionRef<RefT>::is_some() const& noexcept {
+    return this->_has_value;
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+Bool OptionRef<RefT>::is_none() const& noexcept {
+    return !this->_has_value;
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+RefT& OptionRef<RefT>::value_or_abort() const&& noexcept {
+    if (!this->_has_value) {
+        todo_(Use abort macro) abort();
+    }
+    return *this->_ptr;
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+RefT& OptionRef<RefT>::value_or_abort() && noexcept {
+    if (!this->_has_value) {
+        todo_(Use abort macro) abort();
+    }
+    return *this->_ptr;
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+OptionRef<RefT>& OptionRef<RefT>::operator=(OptionRef&& obj) noexcept {
+    this->_has_value = obj._has_value;
+    this->_ptr       = obj._ptr;
+    return *this;
+}
 
 
 template<typename ValueT>
@@ -103,7 +186,7 @@ Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
         return this->_has_value ? Option(do_move(this->_value)) : Option();
     }
     else {
-        return Option(); // TODO: Do abort
+        todo_(Use abort macro) abort();
     }
 }
 
@@ -170,6 +253,16 @@ ValueT Option<ValueT>::value_or_default() && noexcept {
 
 template<typename ValueT>
   requires DefaultConstructible<ValueT> and Movable<ValueT>
+ValueT Option<ValueT>::value_or_abort() && noexcept {
+    if (!this->_has_value) {
+        todo_(Use abort macro) abort();
+    }
+    return do_move(this->_value);
+}
+
+
+template<typename ValueT>
+  requires DefaultConstructible<ValueT> and Movable<ValueT>
 ValueT Option<ValueT>::take() & noexcept {
     this->_has_value = false;
     return do_move(this->_value);
@@ -178,15 +271,19 @@ ValueT Option<ValueT>::take() & noexcept {
 
 template<typename ValueT>
   requires DefaultConstructible<ValueT> and Movable<ValueT>
-const ValueT& Option<ValueT>::as_ref() const& noexcept {
-    return this->_value;
+OptionRef<const ValueT> Option<ValueT>::as_ref() const& noexcept
+  requires (not Reference<ValueT>)
+{
+    return this->_has_value ? OptionRef<const ValueT>::some(this->_value) : OptionRef<const ValueT>::none();
 }
 
 
 template<typename ValueT>
   requires DefaultConstructible<ValueT> and Movable<ValueT>
-ValueT& Option<ValueT>::as_mut() & noexcept {
-    return this->_value;
+OptionRef<ValueT> Option<ValueT>::as_mut() & noexcept
+  requires (not Reference<ValueT>)
+{
+    return this->_has_value ? OptionRef<ValueT>::some(this->_value) : OptionRef<ValueT>::none();
 }
 
 
@@ -195,68 +292,6 @@ template<typename ValueT>
 Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept {
     this->_has_value = obj._has_value;
     this->_value     = do_move(obj._value);
-    return *this;
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-constexpr OptionRef<RefT>::OptionRef(RefT& ref) noexcept:
-    _has_value(true),
-    _ptr(&ref)
-{ }
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-constexpr OptionRef<RefT>::OptionRef(OptionRef&& obj) noexcept:
-    _has_value(true),
-    _ptr(obj._ptr)
-{
-    obj._ptr = nullptr;
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-OptionRef<RefT> OptionRef<RefT>::some(RefT& ref) noexcept {
-    return OptionRef(ref);
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-OptionRef<RefT> OptionRef<RefT>::none() noexcept {
-    return OptionRef<RefT>();
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-Bool OptionRef<RefT>::is_some() const& noexcept {
-    return this->_has_value;
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-Bool OptionRef<RefT>::is_none() const& noexcept {
-    return !this->_has_value;
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-RefT& OptionRef<RefT>::value_or(RefT fallback) const& noexcept {
-    return this->_has_value ? *this->_ptr : fallback;
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
-OptionRef<RefT>& OptionRef<RefT>::operator=(OptionRef&& obj) noexcept {
-    this->_has_value = obj._has_value;
-    this->_ptr       = obj._ptr;
     return *this;
 }
 

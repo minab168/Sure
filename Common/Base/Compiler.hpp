@@ -144,3 +144,12 @@
 #else
     #define THREAD_LOCAL_
 #endif
+
+
+#if COMPILER_MSVC_
+    #define do_pragma_(x_) __pragma(#x_)
+#elif COMPILER_GCC_ || COMPILER_CLANG_ || COMPILER_INTEL_
+    #define do_pragma_(x_) _Pragma (#x_)
+#else
+    #define do_pragma_(x_)
+#endif

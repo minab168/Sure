@@ -50,11 +50,13 @@ class Result final: NoDefaultCopy, Clone<Result<ValueT, ErrorT>> {
     NODISCARD_
     ErrorT error_or_default() && noexcept;
 
-    // NODISCARD_
-    // Option<UPtr<ValueT>> as_ref() const& noexcept;
-    //
-    // NODISCARD_
-    // Option<UPtr<ValueT>> as_mut() & noexcept;
+    NODISCARD_
+    OptionRef<const ValueT> as_ref() const& noexcept
+    requires (not Reference<ValueT>);
+
+    NODISCARD_
+    OptionRef<ValueT> as_mut() & noexcept
+    requires (not Reference<ValueT>);
 
     NODISCARD_
     Result& operator=(Result&&) noexcept;
@@ -129,6 +131,24 @@ template <typename ValueT, typename ErrorT>
 constexpr ErrorT Result<ValueT, ErrorT>::error_or_default() && noexcept {
     static_assert(DefaultConstructible<ErrorT>, "'ErrorT' must be default constructible");
     return !this->_is_err ? do_move(this->_value) : ErrorT();
+}
+
+
+template <typename ValueT, typename ErrorT>
+  requires Movable<ValueT> and Movable<ErrorT>
+OptionRef<const ValueT> Result<ValueT, ErrorT>::as_ref() const& noexcept
+  requires (not Reference<ValueT>)
+{
+    return !this->_is_err ? OptionRef<const ValueT>::some(this->_value) : OptionRef<const ValueT>::none();
+}
+
+
+template <typename ValueT, typename ErrorT>
+  requires Movable<ValueT> and Movable<ErrorT>
+OptionRef<ValueT> Result<ValueT, ErrorT>::as_mut() & noexcept
+  requires (not Reference<ValueT>)
+{
+    return !this->_is_err ? OptionRef<ValueT>::some(this->_value) : OptionRef<ValueT>::none();
 }
 
 
