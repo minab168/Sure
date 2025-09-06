@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+add_library(Sure INTERFACE)
+
+
 if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
     message(STATUS "Consider using `Ninja` for faster build")
 endif()
@@ -21,3 +24,9 @@ enable_testing()
 
 add_subdirectory(Common)
 add_subdirectory(Contribs/googletest)
+
+
+target_include_directories(Sure INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
