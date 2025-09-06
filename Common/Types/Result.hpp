@@ -51,6 +51,12 @@ class Result final: NoDefaultCopy, Clone<Result<ValueT, ErrorT>> {
     ErrorT error_or_default() && noexcept;
 
     NODISCARD_
+    Bool is_ok() const& noexcept;
+
+    NODISCARD_
+    Bool is_err() const& noexcept;
+
+    NODISCARD_
     OptionRef<const ValueT> as_ref() const& noexcept
     requires (not Reference<ValueT>);
 
@@ -91,26 +97,26 @@ constexpr Result<ValueT, ErrorT>::Result(Result&& obj) noexcept:
 
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
-constexpr Result<ValueT, ErrorT> Result<ValueT, ErrorT>::ok(ValueT&& val) noexcept {
+Result<ValueT, ErrorT> Result<ValueT, ErrorT>::ok(ValueT&& val) noexcept {
     return Result(do_move(val));
 }
 
 
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
-constexpr Result<ValueT, ErrorT> Result<ValueT, ErrorT>::err(ErrorT&& err) noexcept {
+Result<ValueT, ErrorT> Result<ValueT, ErrorT>::err(ErrorT&& err) noexcept {
     return Result(do_move(err));
 }
 
 
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
-constexpr Result<ValueT, ErrorT> Result<ValueT, ErrorT>::_clone_impl() const& noexcept {
+Result<ValueT, ErrorT> Result<ValueT, ErrorT>::_clone_impl() const& noexcept {
     if constexpr (!this->_is_err ? Clonable<ValueT> : Clonable<ErrorT>) {
-        return Result(this->_value.clone());
+        return Result((*reinterpret_cast<const ValueT*>(&this->_value)).clone());
     }
     else if constexpr (!this->_is_err ? Clonable<ValueT> : Clonable<ErrorT>) {
-        return Result(do_move(this->_value));
+        return Result(do_move(*reinterpret_cast<const ValueT*>(&this->_value)));
     }
     else {
         return Result(); // TODO: Do abort
@@ -120,17 +126,31 @@ constexpr Result<ValueT, ErrorT> Result<ValueT, ErrorT>::_clone_impl() const& no
 
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
-constexpr ValueT Result<ValueT, ErrorT>::unwrap_or_default() && noexcept {
+ValueT Result<ValueT, ErrorT>::unwrap_or_default() && noexcept {
     static_assert(DefaultConstructible<ValueT>, "'ValueT' must be default constructible");
-    return !this->_is_err ? do_move(this->_value) : ValueT();
+    return !this->_is_err ? do_move( *reinterpret_cast<ValueT*>(&this->_value)) : ValueT();
 }
 
 
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
-constexpr ErrorT Result<ValueT, ErrorT>::error_or_default() && noexcept {
+ErrorT Result<ValueT, ErrorT>::error_or_default() && noexcept {
     static_assert(DefaultConstructible<ErrorT>, "'ErrorT' must be default constructible");
-    return !this->_is_err ? do_move(this->_value) : ErrorT();
+    return !this->_is_err ? do_move( *reinterpret_cast<ErrorT*>(&this->_value)) : ErrorT();
+}
+
+
+template <typename ValueT, typename ErrorT>
+  requires Movable<ValueT> and Movable<ErrorT>
+Bool Result<ValueT, ErrorT>::is_ok() const& noexcept {
+    return !this->_is_err;
+}
+
+
+template <typename ValueT, typename ErrorT>
+  requires Movable<ValueT> and Movable<ErrorT>
+Bool Result<ValueT, ErrorT>::is_err() const& noexcept {
+    return this->_is_err;
 }
 
 
@@ -154,8 +174,8 @@ OptionRef<ValueT> Result<ValueT, ErrorT>::as_mut() & noexcept
 
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
-constexpr Result<ValueT, ErrorT>& Result<ValueT, ErrorT>::operator=(Result&& obj) noexcept {
-    this._is_err = obj._is_err;
+Result<ValueT, ErrorT>& Result<ValueT, ErrorT>::operator=(Result&& obj) noexcept {
+    this->_is_err = obj._is_err;
     this->_value = do_move(obj._value);
     return *this;
 }

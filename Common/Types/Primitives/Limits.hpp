@@ -8,8 +8,8 @@
 #define I_MAX_(type_) ((type_)(~((type_)0) >> 1 ))
 
 
-#define U_MIN_(type_) ((type)0)
-#define U_MAX_(type_) (~(type)0)
+#define U_MIN_(type_) ((type_)0)
+#define U_MAX_(type_) (~(type_)0)
 
 
 #define I8_MIN I_MIN_(I8)

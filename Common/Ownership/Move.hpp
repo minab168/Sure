@@ -1,20 +1,22 @@
 #pragma once
 
 
+#include "../Base/Compiler.hpp"
 #include "../Traits/Base.hpp"
 
 
 template<typename T>
 NODISCARD_
-constexpr typename RemoveRef<T>::type&& do_move(T&& obj) noexcept {
-    return static_cast<typename RemoveRef<T>::type&&>(obj);
+constexpr typename RemoveRef<T>::Type&& do_move(T&& obj) noexcept {
+    return static_cast<typename RemoveRef<T>::Type&&>(obj);
 }
 
 
 template<typename T>
 NODISCARD_
-constexpr typename RemoveRef<T>::Type&& do_move(const T& obj) noexcept {
-    return do_move( const_cast<T&>(obj) );
+constexpr typename RemoveConst<typename RemoveRef<T>::Type>::Type&& do_move(const T& obj) noexcept {
+    using Raw = typename RemoveConst<typename RemoveRef<T>::Type>::Type;
+    return static_cast<Raw&&>(const_cast<Raw&>(obj));
 }
 
 

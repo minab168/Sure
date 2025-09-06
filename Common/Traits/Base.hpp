@@ -2,17 +2,17 @@
 
 
 #if __has_builtin(__remove_reference)
-    template<typename T> struct RemoveRef { using type = __remove_reference(T); };
+    template<typename T> struct RemoveRef { using Type = __remove_reference(T); };
 #else
-    template<typename T> struct RemoveRef { using type = T; };
-    template<typename T> struct RemoveRef<T&> { using type = T; };
-    template<typename T> struct RemoveRef<T&&> { using type = T; };
+    template<typename T> struct RemoveRef { using Type = T; };
+    template<typename T> struct RemoveRef<T&> { using Type = T; };
+    template<typename T> struct RemoveRef<T&&> { using Type = T; };
 #endif
 
 
 template<typename T> struct RemoveConst { typedef T Type; };
 
-template<typename T> struct RemoveConst<const T> { typedef T Type; };
+template<typename T> struct RemoveConst<T const> { typedef T Type; };
 
 
 template<typename T> struct AddConst { using type = const T; };

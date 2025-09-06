@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include "./Platform.hpp"
+
+
 #ifdef __cplusplus
     #define NULL_PTR nullptr
 #else

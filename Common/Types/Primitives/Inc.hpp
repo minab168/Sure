@@ -54,6 +54,7 @@ using U32 = unsigned int;
 
 
 using Byte = U8;
+using Char = char;
 using Void = void;
 using VPtr = Void*;
 
