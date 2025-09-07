@@ -112,11 +112,17 @@ Result<ValueT, ErrorT> Result<ValueT, ErrorT>::err(ErrorT&& err) noexcept {
 template <typename ValueT, typename ErrorT>
   requires Movable<ValueT> and Movable<ErrorT>
 Result<ValueT, ErrorT> Result<ValueT, ErrorT>::_clone_impl() const& noexcept {
-    if constexpr (!this->_is_err ? Clonable<ValueT> : Clonable<ErrorT>) {
+    if constexpr (Clonable<ValueT>) {
         return Result((*reinterpret_cast<const ValueT*>(&this->_value)).clone());
     }
-    else if constexpr (!this->_is_err ? Clonable<ValueT> : Clonable<ErrorT>) {
-        return Result(do_move(*reinterpret_cast<const ValueT*>(&this->_value)));
+    else if constexpr (Clonable<ErrorT>) {
+        return Result((*reinterpret_cast<const ErrorT*>(&this->_value)).clone());
+    }
+    else if constexpr (Copyable<ValueT>) {
+        return Result((*reinterpret_cast<const ValueT*>(&this->_value)).clone());
+    }
+    else if constexpr (Copyable<ErrorT>) {
+        return Result(do_move(*reinterpret_cast<const ErrorT*>(&this->_value)));
     }
     else {
         return Result(); // TODO: Do abort
