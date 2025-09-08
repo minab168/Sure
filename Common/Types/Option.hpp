@@ -5,6 +5,7 @@
 #include "./Clone.hpp"
 #include "../Ownership/Inc.hpp"
 #include "../Traits/Inc.hpp"
+#include "../Utils/Abort.hpp"
 
 
 template<typename RefT>
@@ -144,7 +145,7 @@ template<typename RefT>
   requires (not Reference<RefT>)
 RefT& OptionRef<RefT>::value_or_abort() const&& noexcept {
     if (!this->_has_value) {
-        todo_(Use abort macro) abort();
+        abort_("The given option has no value!");
     }
     return *this->_ptr;
 }
@@ -154,7 +155,7 @@ template<typename RefT>
   requires (not Reference<RefT>)
 RefT& OptionRef<RefT>::value_or_abort() && noexcept {
     if (!this->_has_value) {
-        todo_(Use abort macro) abort();
+        abort_("The given option has no value!");
     }
     return *this->_ptr;
 }
@@ -186,7 +187,7 @@ Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
         return this->_has_value ? Option(do_move(this->_value)) : Option();
     }
     else {
-        todo_(Use abort macro) abort();
+        abort_("Type of value in the option isn't `Copyable` or doesn't implement `Clonable`!");
     }
 }
 
@@ -255,7 +256,7 @@ template<typename ValueT>
   requires DefaultConstructible<ValueT> and Movable<ValueT>
 ValueT Option<ValueT>::value_or_abort() && noexcept {
     if (!this->_has_value) {
-        todo_(Use abort macro) abort();
+        abort_("The given option has no value!");
     }
     return do_move(this->_value);
 }
