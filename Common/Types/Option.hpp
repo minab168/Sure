@@ -123,7 +123,7 @@ OptionRef<RefT> OptionRef<RefT>::some(RefT& ref) noexcept {
 template<typename RefT>
   requires (not Reference<RefT>)
 OptionRef<RefT> OptionRef<RefT>::none() noexcept {
-    return OptionRef<RefT>();
+    return OptionRef();
 }
 
 

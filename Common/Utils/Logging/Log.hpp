@@ -22,7 +22,7 @@ static constexpr void get_timestamp(Char* buf, U64 size) {
     time_t t = time(NULL_PTR);
     struct tm tm_info = {};
 
-    #if defined(OS_WINDOWS_)
+    #if OS_WINDOWS_ == 1
         localtime_s(&tm_info, &t);
     #else
         localtime_r(&t, &tm_info);
@@ -38,8 +38,7 @@ static constexpr void get_timestamp(Char* buf, U64 size) {
 #define log_print_(level_, color_, fmt_, ...) do {                \
         Char ts[20];                                            \
         log_timestamp_(ts);                                    \
-        printf("%s[%s] %s: " fmt_ "%s\n",                      \
-        color_, ts, level_, ##__VA_ARGS__, LOG_COLOR_RESET); \
+        printf("%s[%s] %s: " fmt_ "%s\n", color_, ts, level_, ##__VA_ARGS__, LOG_COLOR_RESET); \
     } while(0)
 
 
