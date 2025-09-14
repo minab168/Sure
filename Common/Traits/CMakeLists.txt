@@ -14,6 +14,7 @@ add_library(Traits
     Clone.hpp
     Comp.hpp
     Creation.hpp
+    Exception.hpp
     From.hpp
     Helpers.hpp
     Inc.hpp

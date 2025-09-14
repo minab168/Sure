@@ -27,9 +27,12 @@ template<typename T> struct RemoveConstVolatile<volatile T> { typedef T Type; };
 template<typename T> struct RemoveConstVolatile<const volatile T> { typedef T Type; };
 
 
-struct FalseType { static constexpr bool value = false; };
+template<bool B>
+struct BoolConstant { static constexpr bool value = B; };
 
-struct TrueType  { static constexpr bool value = true; };
+
+using TrueType  = BoolConstant<true>;
+using FalseType = BoolConstant<false>;
 
 
 template<typename> struct IsLvalueRef: public FalseType { };

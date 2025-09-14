@@ -11,11 +11,10 @@
 template<typename RefT>
   requires (not Reference<RefT>)
 class OptionRef final: NoDefaultCopy {
-    Bool _has_value = false;
-    RefT* _ptr = NULL_PTR;
+    Bool  _has_value = false;
+    RefT* _ptr       = NULL_PTR;
 
     constexpr explicit OptionRef(RefT& ref) noexcept;
-
 
   public:
     constexpr OptionRef() noexcept = default;
@@ -33,26 +32,43 @@ class OptionRef final: NoDefaultCopy {
     Bool is_none() const& noexcept;
 
     NODISCARD_
-    RefT& value_or_abort() const&& noexcept;
-
-    NODISCARD_
     RefT& value_or_abort() && noexcept;
 
     OptionRef& operator=(OptionRef&&) noexcept;
+
+    constexpr ~OptionRef() noexcept override;
 };
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (
+      MoveConstructible<ValueT> and
+      Destructible<ValueT> and
+      NoThrow<ValueT>
+  )
 class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
-    Bool   _has_value = false;
-    ValueT _value{};
+
+    static_assert(MoveConstructible<ValueT>, "Option<ValueT> requires ValueT to be movable object!");
+    static_assert(Destructible<ValueT>, "Option<ValueT> requires ValueT to be destructible object!");
+    static_assert(NoThrow<ValueT>, "Option<ValueT> requires ValueT to not throw any exception in any operation!");
+
+    Bool _has_value = false;
+
+    // _storage: raw memory for ValueT; construct with placement-new, destroy only if Option lvalue survives.
+    alignas(ValueT) U8 _storage[sizeof(ValueT)]{};
+
 
     constexpr explicit Option(const ValueT& val) noexcept;
 
     constexpr explicit Option(ValueT&& val) noexcept;
 
     Option _clone_impl() const& noexcept override;
+
+    ValueT* _ptr() noexcept;
+
+    const ValueT* _ptr() const noexcept;
+
+    Void _destroy_value() noexcept;
 
   public:
     constexpr Option() noexcept = default;
@@ -63,8 +79,6 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
 
     static Option none() noexcept;
 
-    static Option from(const Option& obj) noexcept;
-
     NODISCARD_
     Bool is_some() const& noexcept;
 
@@ -72,13 +86,10 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
     Bool is_none() const& noexcept;
 
     NODISCARD_
-    ValueT value_or_default() && noexcept;
-
-    NODISCARD_
     ValueT value_or_abort() && noexcept;
 
     NODISCARD_
-    ValueT take() & noexcept;
+    Option take() & noexcept;
 
     NODISCARD_
     OptionRef<const ValueT> as_ref() const& noexcept
@@ -88,7 +99,13 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
     OptionRef<ValueT> as_mut() & noexcept
     requires (not Reference<ValueT>);
 
-    Option& operator=(Option&&) noexcept;
+    Option& operator=(Option&&) noexcept
+      requires MoveAssignable<ValueT>;
+
+    Option& operator=(Option&&) noexcept
+      requires (not MoveAssignable<ValueT>);
+
+    constexpr ~Option() noexcept override;
 };
 
 
@@ -106,10 +123,11 @@ constexpr OptionRef<RefT>::OptionRef(RefT& ref) noexcept:
 template<typename RefT>
   requires (not Reference<RefT>)
 constexpr OptionRef<RefT>::OptionRef(OptionRef&& obj) noexcept:
-    _has_value(true),
+    _has_value(obj._has_value),
     _ptr(obj._ptr)
 {
-    obj._ptr = nullptr;
+    obj._has_value = false;
+    obj._ptr       = NULL_PTR;
 }
 
 
@@ -143,20 +161,12 @@ Bool OptionRef<RefT>::is_none() const& noexcept {
 
 template<typename RefT>
   requires (not Reference<RefT>)
-RefT& OptionRef<RefT>::value_or_abort() const&& noexcept {
-    if (!this->_has_value) {
-        abort_("The given option has no value!");
-    }
-    return *this->_ptr;
-}
-
-
-template<typename RefT>
-  requires (not Reference<RefT>)
 RefT& OptionRef<RefT>::value_or_abort() && noexcept {
     if (!this->_has_value) {
-        abort_("The given option has no value!");
+        abort_("No value is provided with the option!");
     }
+
+    // No need to clear states. method takes ownership of this
     return *this->_ptr;
 }
 
@@ -164,27 +174,40 @@ RefT& OptionRef<RefT>::value_or_abort() && noexcept {
 template<typename RefT>
   requires (not Reference<RefT>)
 OptionRef<RefT>& OptionRef<RefT>::operator=(OptionRef&& obj) noexcept {
-    this->_has_value = obj._has_value;
+    if (this == &obj) return *this;
+
     this->_ptr       = obj._ptr;
+    this->_has_value = obj._has_value;
+
+    obj._ptr       = NULL_PTR;
+    obj._has_value = false;
     return *this;
 }
 
 
+template<typename RefT>
+  requires (!Reference<RefT>)
+constexpr OptionRef<RefT>::~OptionRef() noexcept {
+    this->_ptr       = NULL_PTR;
+    this->_has_value = false;
+}
+
+
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 Option<ValueT> Option<ValueT>::some(ValueT&& val) noexcept {
     return Option(do_move(val));
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
     if constexpr (Clonable<ValueT>) {
-        return this->_has_value ? Option(this->_value.clone()) : Option();
+        return this->_has_value ? Option(this->_ptr()->clone()) : Option();
     }
     else if constexpr (Copyable<ValueT>) {
-        return this->_has_value ? Option(do_move(this->_value)) : Option();
+        return this->_has_value ? Option(*this->_ptr()) : Option();
     }
     else {
         abort_("Type of value in the option isn't `Copyable` or doesn't implement `Clonable`!");
@@ -193,108 +216,174 @@ Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-constexpr Option<ValueT>::Option(Option&& obj) noexcept :
-    _has_value(obj._has_value),
-    _value(do_move(obj._value))
-{ }
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+constexpr Option<ValueT>::Option(Option&& obj) noexcept {
+    if (obj._has_value) {
+        new (this->_ptr()) ValueT(do_move(*obj._ptr()));
+        this->_has_value = true;
+        obj._destroy_value();
+    }
+    else {
+        this->_has_value = false;
+    }
+}
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-constexpr Option<ValueT>::Option(const ValueT& val) noexcept :
-    _has_value(true),
-    _value(val)
-{ }
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+constexpr Option<ValueT>::Option(const ValueT& val) noexcept {
+    new (this->_ptr()) ValueT(val);
+    this->_has_value = true;
+}
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-constexpr Option<ValueT>::Option(ValueT&& val) noexcept :
-    _has_value(true),
-    _value(do_move(val))
-{ }
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+constexpr Option<ValueT>::Option(ValueT&& val) noexcept {
+    new (this->_ptr()) ValueT(do_move(val));
+    this->_has_value = true;
+}
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+ValueT* Option<ValueT>::_ptr() noexcept {
+    return reinterpret_cast<ValueT*>(&this->_storage);
+}
+
+
+template<typename ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+const ValueT* Option<ValueT>::_ptr() const noexcept {
+    return reinterpret_cast<const ValueT*>(&this->_storage);
+}
+
+
+template<typename ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+Void Option<ValueT>::_destroy_value() noexcept {
+    if (_has_value) {
+        this->_ptr()->~ValueT();
+        _has_value = false;
+    }
+}
+
+
+template<typename ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 Option<ValueT> Option<ValueT>::none() noexcept {
     return Option();
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-Option<ValueT> Option<ValueT>::from(const Option& obj) noexcept {
-    static_assert(From<ValueT>, "Option value type (ValueT) must implement `From`!");
-    return obj._has_value ? Option(obj._value.clone()) : Option();
-}
-
-
-template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 Bool Option<ValueT>::is_some() const& noexcept {
     return this->_has_value;
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 Bool Option<ValueT>::is_none() const& noexcept {
     return !this->_has_value;
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-ValueT Option<ValueT>::value_or_default() && noexcept {
-    return this->_has_value ? do_move(this->_value) : ValueT();
-}
-
-
-template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 ValueT Option<ValueT>::value_or_abort() && noexcept {
     if (!this->_has_value) {
-        abort_("The given option has no value!");
+        abort_("No value is provided with the option!");
     }
-    return do_move(this->_value);
+
+    // No need to clear states. method takes ownership of this
+    return do_move(*this->_ptr());
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-ValueT Option<ValueT>::take() & noexcept {
-    this->_has_value = false;
-    return do_move(this->_value);
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+Option<ValueT> Option<ValueT>::take() & noexcept {
+    if (!this->_has_value) return {};
+
+    let ret_res = Option<ValueT>::some(do_move(*this->_ptr()));
+    this->_destroy_value();
+    return ret_res;
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 OptionRef<const ValueT> Option<ValueT>::as_ref() const& noexcept
   requires (not Reference<ValueT>)
 {
-    return this->_has_value ? OptionRef<const ValueT>::some(this->_value) : OptionRef<const ValueT>::none();
+    return this->_has_value ? OptionRef<const ValueT>::some(*this->_ptr()) : OptionRef<const ValueT>::none();
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
 OptionRef<ValueT> Option<ValueT>::as_mut() & noexcept
   requires (not Reference<ValueT>)
 {
-    return this->_has_value ? OptionRef<ValueT>::some(this->_value) : OptionRef<ValueT>::none();
+    return this->_has_value ? OptionRef<ValueT>::some(*this->_ptr()) : OptionRef<ValueT>::none();
 }
 
 
 template<typename ValueT>
-  requires DefaultConstructible<ValueT> and Movable<ValueT>
-Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept {
-    this->_has_value = obj._has_value;
-    this->_value     = do_move(obj._value);
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
+  requires MoveAssignable<ValueT>
+{
+    if (this == &obj) return *this;
+
+    if (this->_has_value) {
+        if (obj._has_value) {
+            *this->_ptr() = do_move(*obj._ptr());
+            obj._destroy_value();
+        }
+        else {
+            this->_destroy_value();
+        }
+    }
+    else {
+        if (obj._has_value) {
+            new (this->_ptr()) ValueT(do_move(*obj._ptr()));
+            this->_has_value = true;
+            obj._destroy_value();
+        }
+    }
+
     return *this;
 }
+
+
+template<typename ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
+  requires (not MoveAssignable<ValueT>)
+{
+    if (this == &obj) return *this;
+
+    this->_destroy_value();
+    
+    if (obj._has_value) {
+        new (this->_ptr()) ValueT(do_move(*obj._ptr()));
+        this->_has_value = true;
+        obj._destroy_value();
+    }
+
+    return *this;
+}
+
+
+template<typename ValueT>
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+constexpr Option<ValueT>::~Option() noexcept {
+    this->_destroy_value();
+}
+
 
 
 // ========================================================================
