@@ -44,13 +44,13 @@ template<typename ValueT>
   requires (
       MoveConstructible<ValueT> and
       Destructible<ValueT> and
-      NoThrow<ValueT>
+      NoThrowMovable<ValueT>
   )
 class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
 
     static_assert(MoveConstructible<ValueT>, "Option<ValueT> requires ValueT to be movable object!");
     static_assert(Destructible<ValueT>, "Option<ValueT> requires ValueT to be destructible object!");
-    static_assert(NoThrow<ValueT>, "Option<ValueT> requires ValueT to not throw any exception in any operation!");
+    static_assert(NoThrowMovable<ValueT>, "Option<ValueT> requires ValueT to not throw any exception in any operation!");
 
     Bool _has_value = false;
 
@@ -64,9 +64,9 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
 
     Option _clone_impl() const& noexcept override;
 
-    ValueT* _ptr() noexcept;
+    ValueT* _storage_ptr() noexcept;
 
-    const ValueT* _ptr() const noexcept;
+    const ValueT* _storage_ptr() const noexcept;
 
     Void _destroy_value() noexcept;
 
@@ -194,29 +194,31 @@ constexpr OptionRef<RefT>::~OptionRef() noexcept {
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT> Option<ValueT>::some(ValueT&& val) noexcept {
     return Option(do_move(val));
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
+    static_assert(
+        Clonable<ValueT> || Copyable<ValueT>,
+        "Type of value in the option isn't `Copyable` or doesn't implement `Clonable`!"
+    );
+
     if constexpr (Clonable<ValueT>) {
-        return this->_has_value ? Option(this->_ptr()->clone()) : Option();
-    }
-    else if constexpr (Copyable<ValueT>) {
-        return this->_has_value ? Option(*this->_ptr()) : Option();
+        return this->_has_value ? Option(this->_storage_ptr()->clone()) : Option();
     }
     else {
-        abort_("Type of value in the option isn't `Copyable` or doesn't implement `Clonable`!");
+        return this->_has_value ? Option(*this->_ptr()) : Option();
     }
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 constexpr Option<ValueT>::Option(Option&& obj) noexcept {
     if (obj._has_value) {
         new (this->_ptr()) ValueT(do_move(*obj._ptr()));
@@ -230,7 +232,7 @@ constexpr Option<ValueT>::Option(Option&& obj) noexcept {
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 constexpr Option<ValueT>::Option(const ValueT& val) noexcept {
     new (this->_ptr()) ValueT(val);
     this->_has_value = true;
@@ -238,7 +240,7 @@ constexpr Option<ValueT>::Option(const ValueT& val) noexcept {
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 constexpr Option<ValueT>::Option(ValueT&& val) noexcept {
     new (this->_ptr()) ValueT(do_move(val));
     this->_has_value = true;
@@ -246,52 +248,52 @@ constexpr Option<ValueT>::Option(ValueT&& val) noexcept {
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
-ValueT* Option<ValueT>::_ptr() noexcept {
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
+ValueT* Option<ValueT>::_storage_ptr() noexcept {
     return reinterpret_cast<ValueT*>(&this->_storage);
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
-const ValueT* Option<ValueT>::_ptr() const noexcept {
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
+const ValueT* Option<ValueT>::_storage_ptr() const noexcept {
     return reinterpret_cast<const ValueT*>(&this->_storage);
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Void Option<ValueT>::_destroy_value() noexcept {
     if (_has_value) {
-        this->_ptr()->~ValueT();
+        this->_storage_ptr()->~ValueT();
         _has_value = false;
     }
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT> Option<ValueT>::none() noexcept {
     return Option();
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Bool Option<ValueT>::is_some() const& noexcept {
     return this->_has_value;
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Bool Option<ValueT>::is_none() const& noexcept {
     return !this->_has_value;
 }
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 ValueT Option<ValueT>::value_or_abort() && noexcept {
     if (!this->_has_value) {
         abort_("No value is provided with the option!");
@@ -303,7 +305,7 @@ ValueT Option<ValueT>::value_or_abort() && noexcept {
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT> Option<ValueT>::take() & noexcept {
     if (!this->_has_value) return {};
 
@@ -314,7 +316,7 @@ Option<ValueT> Option<ValueT>::take() & noexcept {
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 OptionRef<const ValueT> Option<ValueT>::as_ref() const& noexcept
   requires (not Reference<ValueT>)
 {
@@ -323,7 +325,7 @@ OptionRef<const ValueT> Option<ValueT>::as_ref() const& noexcept
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 OptionRef<ValueT> Option<ValueT>::as_mut() & noexcept
   requires (not Reference<ValueT>)
 {
@@ -332,7 +334,7 @@ OptionRef<ValueT> Option<ValueT>::as_mut() & noexcept
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
   requires MoveAssignable<ValueT>
 {
@@ -340,7 +342,7 @@ Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
 
     if (this->_has_value) {
         if (obj._has_value) {
-            *this->_ptr() = do_move(*obj._ptr());
+            *this->_storage_ptr() = do_move(*obj._ptr());
             obj._destroy_value();
         }
         else {
@@ -360,7 +362,7 @@ Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
   requires (not MoveAssignable<ValueT>)
 {
@@ -379,7 +381,7 @@ Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
 
 
 template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrow<ValueT>)
+  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 constexpr Option<ValueT>::~Option() noexcept {
     this->_destroy_value();
 }

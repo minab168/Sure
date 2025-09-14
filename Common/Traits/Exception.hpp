@@ -29,11 +29,17 @@ concept NoThrowDestructible = std::is_nothrow_destructible_v<T>;
 
 
 template<typename T>
-concept NoThrowCopyable = NoThrowCopyConstructible<T> and NoThrowCopyAssignable<T>;
+concept NoThrowMovable = NoThrowDefaultConstructible<T> and
+    NoThrowMoveConstructible<T> and
+    NoThrowMoveAssignable<T> and
+    NoThrowDestructible<T>;
 
 
 template<typename T>
-concept NoThrowMovable = NoThrowMoveConstructible<T> and NoThrowMoveAssignable<T>;
+concept NoThrowCopyable = NoThrowDefaultConstructible<T> and
+    NoThrowCopyConstructible<T> and
+    NoThrowCopyAssignable<T> and
+    NoThrowDestructible<T>;
 
 
 template<typename T>
