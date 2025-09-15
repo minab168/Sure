@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include "Move.hpp"
+
+
 class NoDefaultCopy {
     constexpr NoDefaultCopy(const NoDefaultCopy&) noexcept = delete;
     constexpr NoDefaultCopy& operator=(NoDefaultCopy&) noexcept = delete;

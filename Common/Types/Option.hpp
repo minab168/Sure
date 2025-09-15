@@ -46,7 +46,7 @@ template<typename ValueT>
       Destructible<ValueT> and
       NoThrowMovable<ValueT>
   )
-class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
+class Option final: NoDefaultCopy /*, public Clone<Option<ValueT>> */ {
 
     static_assert(MoveConstructible<ValueT>, "Option<ValueT> requires ValueT to be movable object!");
     static_assert(Destructible<ValueT>, "Option<ValueT> requires ValueT to be destructible object!");
@@ -57,12 +57,9 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
     // _storage: raw memory for ValueT; construct with placement-new, destroy only if Option lvalue survives.
     alignas(ValueT) U8 _storage[sizeof(ValueT)]{};
 
-
-    constexpr explicit Option(const ValueT& val) noexcept;
-
     constexpr explicit Option(ValueT&& val) noexcept;
 
-    Option _clone_impl() const& noexcept override;
+    // Option _clone_impl() const& noexcept override;
 
     ValueT* _storage_ptr() noexcept;
 
@@ -92,6 +89,9 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
     Option take() & noexcept;
 
     NODISCARD_
+    Option clone() const& noexcept;
+
+    NODISCARD_
     OptionRef<const ValueT> as_ref() const& noexcept
     requires (not Reference<ValueT>);
 
@@ -100,7 +100,7 @@ class Option final: NoDefaultCopy, public Clone<Option<ValueT>> {
     requires (not Reference<ValueT>);
 
     Option& operator=(Option&&) noexcept
-      requires MoveAssignable<ValueT>;
+      requires (MoveAssignable<ValueT> /* and NoThrowMoveAssignable<ValueT>*/ );
 
     Option& operator=(Option&&) noexcept
       requires (not MoveAssignable<ValueT>);
@@ -202,7 +202,7 @@ Option<ValueT> Option<ValueT>::some(ValueT&& val) noexcept {
 
 template<typename ValueT>
   requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
-Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
+Option<ValueT> Option<ValueT>::clone() const& noexcept {
     static_assert(
         Clonable<ValueT> || Copyable<ValueT>,
         "Type of value in the option isn't `Copyable` or doesn't implement `Clonable`!"
@@ -212,7 +212,7 @@ Option<ValueT> Option<ValueT>::_clone_impl() const& noexcept {
         return this->_has_value ? Option(this->_storage_ptr()->clone()) : Option();
     }
     else {
-        return this->_has_value ? Option(*this->_ptr()) : Option();
+        return this->_has_value ? Option(*this->_storage_ptr()) : Option();
     }
 }
 
@@ -221,7 +221,7 @@ template<typename ValueT>
   requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 constexpr Option<ValueT>::Option(Option&& obj) noexcept {
     if (obj._has_value) {
-        new (this->_ptr()) ValueT(do_move(*obj._ptr()));
+        new (this->_storage_ptr()) ValueT(do_move(*obj._storage_ptr()));
         this->_has_value = true;
         obj._destroy_value();
     }
@@ -233,16 +233,8 @@ constexpr Option<ValueT>::Option(Option&& obj) noexcept {
 
 template<typename ValueT>
   requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
-constexpr Option<ValueT>::Option(const ValueT& val) noexcept {
-    new (this->_ptr()) ValueT(val);
-    this->_has_value = true;
-}
-
-
-template<typename ValueT>
-  requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 constexpr Option<ValueT>::Option(ValueT&& val) noexcept {
-    new (this->_ptr()) ValueT(do_move(val));
+    new (this->_storage_ptr()) ValueT(do_move(val));
     this->_has_value = true;
 }
 
@@ -300,7 +292,7 @@ ValueT Option<ValueT>::value_or_abort() && noexcept {
     }
 
     // No need to clear states. method takes ownership of this
-    return do_move(*this->_ptr());
+    return do_move(*this->_storage_ptr());
 }
 
 
@@ -309,9 +301,9 @@ template<typename ValueT>
 Option<ValueT> Option<ValueT>::take() & noexcept {
     if (!this->_has_value) return {};
 
-    let ret_res = Option<ValueT>::some(do_move(*this->_ptr()));
+    let ret_res = Option::some(do_move(*this->_storage_ptr()));
     this->_destroy_value();
-    return ret_res;
+    return do_move(ret_res);
 }
 
 
@@ -320,7 +312,7 @@ template<typename ValueT>
 OptionRef<const ValueT> Option<ValueT>::as_ref() const& noexcept
   requires (not Reference<ValueT>)
 {
-    return this->_has_value ? OptionRef<const ValueT>::some(*this->_ptr()) : OptionRef<const ValueT>::none();
+    return this->_has_value ? OptionRef<const ValueT>::some(*this->_storage_ptr()) : OptionRef<const ValueT>::none();
 }
 
 
@@ -329,20 +321,20 @@ template<typename ValueT>
 OptionRef<ValueT> Option<ValueT>::as_mut() & noexcept
   requires (not Reference<ValueT>)
 {
-    return this->_has_value ? OptionRef<ValueT>::some(*this->_ptr()) : OptionRef<ValueT>::none();
+    return this->_has_value ? OptionRef<ValueT>::some(*this->_storage_ptr()) : OptionRef<ValueT>::none();
 }
 
 
 template<typename ValueT>
   requires (MoveConstructible<ValueT> and Destructible<ValueT> and NoThrowMovable<ValueT>)
 Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
-  requires MoveAssignable<ValueT>
+  requires (MoveAssignable<ValueT> /* and NoThrowMoveAssignable<ValueT> */)
 {
     if (this == &obj) return *this;
 
     if (this->_has_value) {
         if (obj._has_value) {
-            *this->_storage_ptr() = do_move(*obj._ptr());
+            *this->_storage_ptr() = do_move(*obj._storage_ptr());
             obj._destroy_value();
         }
         else {
@@ -351,7 +343,7 @@ Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
     }
     else {
         if (obj._has_value) {
-            new (this->_ptr()) ValueT(do_move(*obj._ptr()));
+            new (this->_storage_ptr()) ValueT(do_move(*obj._storage_ptr()));
             this->_has_value = true;
             obj._destroy_value();
         }
@@ -369,9 +361,9 @@ Option<ValueT>& Option<ValueT>::operator=(Option&& obj) noexcept
     if (this == &obj) return *this;
 
     this->_destroy_value();
-    
+
     if (obj._has_value) {
-        new (this->_ptr()) ValueT(do_move(*obj._ptr()));
+        new (this->_storage_ptr()) ValueT(do_move(*obj._storage_ptr()));
         this->_has_value = true;
         obj._destroy_value();
     }

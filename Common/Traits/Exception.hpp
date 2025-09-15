@@ -29,10 +29,7 @@ concept NoThrowDestructible = std::is_nothrow_destructible_v<T>;
 
 
 template<typename T>
-concept NoThrowMovable = NoThrowDefaultConstructible<T> and
-    NoThrowMoveConstructible<T> and
-    NoThrowMoveAssignable<T> and
-    NoThrowDestructible<T>;
+concept NoThrowMovable = Primitive<T> or (NoThrowMoveConstructible<T> and NoThrowDestructible<T>);
 
 
 template<typename T>
@@ -51,9 +48,9 @@ concept NoThrowRegular = NoThrowSemiregular<T> and NoThrowMovable<T>;
 
 
 template<typename T>
-concept NoThrow = NoThrowDefaultConstructible<T> and
+concept NoThrow = Primitive<T> or (NoThrowDefaultConstructible<T> and
     NoThrowCopyConstructible<T> and
     NoThrowMoveConstructible<T> and
     NoThrowCopyAssignable<T> and
     NoThrowMoveAssignable<T> and
-    NoThrowDestructible<T>;
+    NoThrowDestructible<T>);
