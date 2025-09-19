@@ -10,7 +10,7 @@
 template<typename RefT>
   requires (not Reference<RefT>)
 class OptionRef final: NoDefaultCopy {
-    RefT _ptr = NULL_PTR;
+    RefT* _ptr = NULL_PTR;
 
     constexpr explicit OptionRef(RefT& ref) noexcept;
 

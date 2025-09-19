@@ -17,6 +17,7 @@ add_library(Types
     Result.hpp
     Primitives/Inc.hpp
     Primitives/Size.hpp
+    UPtr.hpp
 )
 
 
