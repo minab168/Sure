@@ -77,13 +77,13 @@ class Result final: NoDefaultCopy {
     constexpr explicit Result(ValueT&& val) noexcept;
 
     NODISCARD_
-    ValueT* _value_storage_ptr() noexcept;
+    ValueT* _value_storage_ptr() & noexcept;
 
     NODISCARD_
     const ValueT* _value_storage_ptr() const& noexcept;
 
     NODISCARD_
-    ErrorT* _error_storage_ptr() noexcept;
+    ErrorT* _error_storage_ptr() & noexcept;
 
     NODISCARD_
     const ErrorT* _error_storage_ptr() const& noexcept;
@@ -101,16 +101,13 @@ class Result final: NoDefaultCopy {
     static Result err(ErrorT&& err) noexcept;
 
     NODISCARD_
-    ValueT unwrap() && noexcept
-      requires Printable<ErrorT>;
+    ValueT unwrap() && noexcept;
 
     NODISCARD_
-    ValueT expect(const Char* msg) && noexcept
-      requires Printable<ErrorT>;
+    ValueT expect(const Char* msg) && noexcept;
 
     NODISCARD_
-    ErrorT unwrap_err() && noexcept
-      requires Printable<ValueT>;
+    ErrorT unwrap_err() && noexcept;
 
     NODISCARD_
     Option<ValueT> value() && noexcept;
@@ -267,7 +264,7 @@ constexpr Result<ValueT, ErrorT>::Result(ErrorT&& err) noexcept {
 
 template <typename ValueT, typename ErrorT>
 RESULT_CLASS_TEMPLATE_CONSTRAINT
-ValueT* Result<ValueT, ErrorT>::_value_storage_ptr() noexcept {
+ValueT* Result<ValueT, ErrorT>::_value_storage_ptr() & noexcept {
     return reinterpret_cast<ValueT*>(&this->_value_storage);
 }
 
@@ -281,7 +278,7 @@ const ValueT* Result<ValueT, ErrorT>::_value_storage_ptr() const& noexcept {
 
 template <typename ValueT, typename ErrorT>
 RESULT_CLASS_TEMPLATE_CONSTRAINT
-ErrorT* Result<ValueT, ErrorT>::_error_storage_ptr() noexcept {
+ErrorT* Result<ValueT, ErrorT>::_error_storage_ptr() & noexcept {
     return reinterpret_cast<ErrorT*>(&this->_error_storage);
 }
 
@@ -355,15 +352,13 @@ Result<ValueT, ErrorT> Result<ValueT, ErrorT>::clone() const& noexcept {
 
 template <typename ValueT, typename ErrorT>
 RESULT_CLASS_TEMPLATE_CONSTRAINT
-ValueT Result<ValueT, ErrorT>::unwrap() && noexcept
-  requires Printable<ErrorT>
-{
+ValueT Result<ValueT, ErrorT>::unwrap() && noexcept {
     if (this->is_err()) {
-        if constexpr (Primitive<ValueT>) {
+        if constexpr (Primitive<ErrorT>) {
             abort_("Result contains error. cannot be unwrapped for value | %d", *this->_error_storage_ptr()); // TODO: Fix it to cover all possible primitive types
         }
         else {
-            abort_("Result contains error. cannot be unwrapped for value | %s", this->_error_storage_ptr()->print());
+            abort_("Result contains error. cannot be unwrapped for value | %s", this->_error_storage_ptr()->to_string().c_str());
         }
     }
     return do_move( *this->_value_storage_ptr());
@@ -372,28 +367,27 @@ ValueT Result<ValueT, ErrorT>::unwrap() && noexcept
 
 template <typename ValueT, typename ErrorT>
 RESULT_CLASS_TEMPLATE_CONSTRAINT
-ValueT Result<ValueT, ErrorT>::expect(const Char* msg) && noexcept
-  requires Printable<ErrorT>
-{
+ValueT Result<ValueT, ErrorT>::expect(const Char* msg) && noexcept {
     if (this->is_err()) {
         abort_("%s | %s", msg, this->_error_storage_ptr()->print());
     }
+    if (this->is_err()) {
+        if constexpr (Primitive<ErrorT>) {
+            abort_("%s | %s", msg, this->_error_storage_ptr()); // TODO: Fix it to cover all possible primitive types
+        }
+        else {
+            abort_("%s | %s", msg, this->_error_storage_ptr()->print());
+        }
+    }
     return do_move( *this->_value_storage_ptr());
 }
 
 
 template <typename ValueT, typename ErrorT>
 RESULT_CLASS_TEMPLATE_CONSTRAINT
-ErrorT Result<ValueT, ErrorT>::unwrap_err() && noexcept
-  requires Printable<ValueT>
-{
+ErrorT Result<ValueT, ErrorT>::unwrap_err() && noexcept {
     if (this->is_ok()) {
-        if constexpr (Primitive<ValueT>) {
-            abort_("Result contains value. cannot be unwrapped for error | %d", *this->_value_storage_ptr()); // TODO: Fix it to cover all possible primitive types
-        }
-        else {
-            abort_("Result contains value. cannot be unwrapped for error | %s", this->_value_storage_ptr()->print());
-        }
+        abort_("Result contains value. cannot be unwrapped for error.");
     }
     return do_move( *this->_error_storage_ptr());
 }

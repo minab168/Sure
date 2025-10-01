@@ -39,7 +39,7 @@ static constexpr void get_timestamp(Char* buf, U64 size) {
         Char ts[20];                                            \
         log_timestamp_(ts);                                    \
         printf("%s[%s] %s: " fmt_ "%s\n", color_, ts, level_, ##__VA_ARGS__, LOG_COLOR_RESET); \
-    } while(0)
+    } while(false)
 
 
 #define log_fat_(fmt_, ...)  log_print_("FATAL",   LOG_COLOR_FATAL, fmt_, ##__VA_ARGS__)
@@ -51,5 +51,5 @@ static constexpr void get_timestamp(Char* buf, U64 size) {
 #ifndef NO_DEBUG_
 #  define log_debug_(fmt_, ...) log_print_("DEBUG",   LOG_COLOR_DEBUG, fmt_, ##__VA_ARGS__)
 #else
-#  define log_debug_(fmt_, ...) do {} while(0)
+#  define log_debug_(fmt_, ...) do {} while(false)
 #endif

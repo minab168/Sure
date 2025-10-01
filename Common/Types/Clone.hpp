@@ -23,6 +23,6 @@ class Clone {
 
 
 template<typename Derived>
-inline Derived Clone<Derived>::clone() const& noexcept {
+Derived Clone<Derived>::clone() const& noexcept {
     return this->_clone_impl();
 }
