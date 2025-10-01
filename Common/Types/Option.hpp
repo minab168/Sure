@@ -30,7 +30,7 @@ class OptionRef final: NoDefaultCopy {
     Bool is_none() const& noexcept;
 
     NODISCARD_
-    RefT& value_or_abort() && noexcept;
+    RefT value_or_abort() && noexcept;
 
     OptionRef& operator=(OptionRef&&) noexcept;
 
@@ -156,7 +156,7 @@ Bool OptionRef<RefT>::is_none() const& noexcept {
 
 template<typename RefT>
   requires (not Reference<RefT>)
-RefT& OptionRef<RefT>::value_or_abort() && noexcept {
+RefT OptionRef<RefT>::value_or_abort() && noexcept {
     if (this->is_none()) {
         abort_("No value is provided with the option!");
     }
