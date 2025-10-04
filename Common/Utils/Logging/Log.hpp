@@ -1,9 +1,8 @@
 #pragma once
 
-
+#include <format>
 #include <stdio.h>
 #include <time.h>
-
 #include "Color.hpp"
 #include "../../Base/Lang.hpp"
 #include "../../Types/Primitives/Inc.hpp"
@@ -16,6 +15,19 @@
 #define LOG_COLOR_INFO    COLOR_GREEN
 #define LOG_COLOR_NOTE    COLOR_CYAN
 #define LOG_COLOR_DEBUG   COLOR_MAGENTA
+
+
+#define format_(fmt_, ...) std::format(fmt_, ##__VA_ARGS__)
+
+
+#define print_(fmt_, ...) do {  \
+        printf(fmt_, ##__VA_ARGS__); \
+    } while(false)
+
+
+#define println_(fmt_, ...) do {  \
+        printf(fmt_ "\n", ##__VA_ARGS__); \
+    } while(false)
 
 
 static constexpr void get_timestamp(Char* buf, U64 size) {

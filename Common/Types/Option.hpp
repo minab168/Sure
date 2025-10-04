@@ -5,6 +5,7 @@
 #include "../Ownership/Inc.hpp"
 #include "../Traits/Inc.hpp"
 #include "../Utils/Abort.hpp"
+#include "../../../../AliasTemp.hpp"
 
 
 template<typename RefT>
@@ -31,6 +32,10 @@ class OptionRef final: NoDefaultCopy {
 
     NODISCARD_
     RefT value_or_abort() && noexcept;
+
+    NODISCARD_
+    String to_string() const& noexcept
+      requires (ToString<RefT>);
 
     OptionRef& operator=(OptionRef&&) noexcept;
 
@@ -88,6 +93,10 @@ class Option final: NoDefaultCopy /*, public Clone<Option<ValueT>> */ {
 
     NODISCARD_
     Option clone() const& noexcept;
+
+    NODISCARD_
+    String to_string() const& noexcept
+      requires (ToString<ValueT>);
 
     NODISCARD_
     OptionRef<const ValueT> as_ref() const& noexcept
@@ -162,7 +171,16 @@ RefT OptionRef<RefT>::value_or_abort() && noexcept {
     }
 
     // No need to clear states. method takes ownership of this
-    return *this->_ptr;
+    return do_move(*this->_ptr);
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+String OptionRef<RefT>::to_string() const & noexcept
+  requires (ToString<RefT>)
+{
+    return this->_ptr != NULL_PTR ? format_("some(&{})", this->_ptr()->to_string()) : format_("none");
 }
 
 
@@ -206,6 +224,16 @@ Option<ValueT> Option<ValueT>::clone() const& noexcept {
         return this->_has_value ? Option(*this->_storage_ptr()) : Option();
     }
 }
+
+
+template<typename ValueT>
+  requires (MoveConstructible<ValueT> && Destructible<ValueT> && NoThrowMovable<ValueT>)
+String Option<ValueT>::to_string() const & noexcept
+  requires (ToString<ValueT>)
+{
+    return this->_has_value ? format_("some({})", this->_storage_ptr()->to_string()) : format_("none");
+}
+
 
 
 template<typename ValueT>

@@ -12,3 +12,9 @@ template<typename T>
 concept Printable = Primitive<T> or requires(T t) {
     { t.print() };
 };
+
+
+template<typename T>
+concept ToString = requires(T t) {
+    { t.to_string() };
+};
