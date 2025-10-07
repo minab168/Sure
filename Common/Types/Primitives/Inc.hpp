@@ -58,6 +58,9 @@ using Char = char;
 using Void = void;
 using VPtr = Void*;
 
+using Size  = U64;
+using SSize = I64;
+
 #ifdef IS_CPP_
     using Bool = bool;
 #else
