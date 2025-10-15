@@ -408,5 +408,6 @@ constexpr Option<ValueT>::~Option() noexcept {
 
 
 #define some_(val_)         Option<decltype(val_)>::some(val_)
+#define some_move_(val_)    Option<decltype(val_)>::some(do_move(val_))
 #define some_ty_(val_, ty_) Option<ty_>::some(val_)
 #define none_(ty_)          Option<ty_>::none()
