@@ -10,7 +10,7 @@
 
 template<typename RefT>
   requires (not Reference<RefT>)
-class OptionRef final: NoDefaultCopy {
+class OptionRef final /* : NoDefaultCopy */ {
     RefT* _ptr = NULL_PTR;
 
     constexpr explicit OptionRef(RefT& ref) noexcept;
@@ -31,7 +31,7 @@ class OptionRef final: NoDefaultCopy {
     Bool is_none() const& noexcept;
 
     NODISCARD_
-    RefT value_or_abort() && noexcept;
+    RefT value_or_abort() const&& noexcept;
 
     NODISCARD_
     String to_string() const& noexcept
@@ -39,7 +39,7 @@ class OptionRef final: NoDefaultCopy {
 
     OptionRef& operator=(OptionRef&&) noexcept;
 
-    constexpr ~OptionRef() noexcept override;
+    constexpr ~OptionRef() noexcept;
 };
 
 
@@ -165,7 +165,7 @@ Bool OptionRef<RefT>::is_none() const& noexcept {
 
 template<typename RefT>
   requires (not Reference<RefT>)
-RefT OptionRef<RefT>::value_or_abort() && noexcept {
+RefT OptionRef<RefT>::value_or_abort() const&& noexcept {
     if (this->is_none()) {
         abort_("No value is provided with the option!");
     }
