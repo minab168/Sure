@@ -31,7 +31,10 @@ class OptionRef final /* : NoDefaultCopy */ {
     Bool is_none() const& noexcept;
 
     NODISCARD_
-    RefT value_or_abort() const&& noexcept;
+    const RefT& value_or_abort() const& noexcept;
+
+    NODISCARD_
+    RefT& value_or_abort() & noexcept;
 
     NODISCARD_
     String to_string() const& noexcept
@@ -165,13 +168,25 @@ Bool OptionRef<RefT>::is_none() const& noexcept {
 
 template<typename RefT>
   requires (not Reference<RefT>)
-RefT OptionRef<RefT>::value_or_abort() const&& noexcept {
+const RefT& OptionRef<RefT>::value_or_abort() const& noexcept {
     if (this->is_none()) {
         abort_("No value is provided with the option!");
     }
 
     // No need to clear states. method takes ownership of this
-    return do_move(*this->_ptr);
+    return *this->_ptr;
+}
+
+
+template<typename RefT>
+  requires (not Reference<RefT>)
+RefT& OptionRef<RefT>::value_or_abort() & noexcept {
+    if (this->is_none()) {
+        abort_("No value is provided with the option!");
+    }
+
+    // No need to clear states. method takes ownership of this
+    return *this->_ptr;
 }
 
 
