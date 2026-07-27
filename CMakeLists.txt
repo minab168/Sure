@@ -23,10 +23,10 @@ enable_testing()
 
 
 add_subdirectory(Common)
-add_subdirectory(Contribs/googletest)
+#add_subdirectory(Contribs/googletest)
 
 
 target_include_directories(Sure INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
     $<INSTALL_INTERFACE:include>
 )
