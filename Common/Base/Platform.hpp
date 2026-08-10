@@ -61,14 +61,21 @@
 #endif
 
 
-#if defined(__FreeBSD)
+#if defined(__FreeBSD__)
     #define OS_FREEBSD_ 1
 #else
     #define OS_FREEBSD_ 0
 #endif
 
 
-#if !OS_WINDOWS_ && !OS_LINUX_ && !OS_MAC_ && !OS_FREEBSD_
+#if defined(CONFIG_IDF_TARGET_ESP32) || defined(ESP_PLATFORM)
+    #define OS_ESP_IDF 1
+#else
+    #define OS_ESP_IDF 0
+#endif
+
+
+#if !OS_WINDOWS_ && !OS_LINUX_ && !OS_MAC_ && !OS_FREEBSD_ && !OS_ESP_IDF
     #error "Unsupported OS platform"
 #endif
 
@@ -132,7 +139,28 @@
 #endif
 
 
-#if !ARCH_X86_ && !ARCH_X64_ && !ARCH_ARM64_ && !ARCH_ARM32_ && !ARCH_PPC64_ && !ARCH_PPC32_
+#if defined(__xtensa__)
+    #define ARCH_XTENSA_ 1
+#else
+    #define ARCH_XTENSA_ 0
+#endif
+
+
+#if defined(__riscv) || defined(__riscv__)
+    #define ARCH_RISCV_ 1
+#else
+    #define ARCH_RISCV_ 0
+#endif
+
+
+#if !ARCH_X86_ \
+    && !ARCH_X64_ \
+    && !ARCH_ARM64_ \
+    && !ARCH_ARM32_ \
+    && !ARCH_PPC64_ \
+    && !ARCH_PPC32_ \
+    && !ARCH_XTENSA_ \
+    && !ARCH_RISCV_
     #error "Unsupported architecture"
 #endif
 

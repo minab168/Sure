@@ -7,14 +7,7 @@
 # ──────────────────────────────────────────────
 
 
-add_library(Utils
+add_library(Location
     INTERFACE
     Inc.hpp
-    Check.hpp
-    Abort.hpp
 )
-
-
-add_subdirectory(Location)
-add_subdirectory(Logging)
-add_subdirectory(Tests)

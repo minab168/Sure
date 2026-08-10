@@ -153,3 +153,12 @@
 #else
     #define do_pragma_(x_)
 #endif
+
+
+#ifndef HAS_BUILTIN_
+    #ifdef __has_builtin
+        #define HAS_BUILTIN_(x) __has_builtin(x)
+    #else
+        #define HAS_BUILTIN_(x) 0
+    #endif
+#endif

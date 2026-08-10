@@ -47,7 +47,7 @@
 #endif
 
 
-// #if defined(COMPILER_GCC_) || defined(COMPILER_CLANG_)
+/* #if defined(COMPILER_GCC_) || defined(COMPILER_CLANG_)
 //     #define unsafe_block_(block_) \
 //         #pragma GCC diagnostic push \
 //         #pragma GCC diagnostic ignored "-Wattributes" \
@@ -62,4 +62,4 @@
 // #else
 //     #pragma message("Warning: `unsafe_block_` macro isn ot supported on your compiler")
 //     #define unsafe_block_(block_)
-// #endif
+// #endif */
