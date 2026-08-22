@@ -9,7 +9,23 @@ concept Integral = std::is_integral_v<T>;
 
 
 template<typename T>
+concept UIntegral = Integral<T> and std::is_unsigned_v<T>;
+
+
+template<typename T>
+concept SIntegral = Integral<T> and std::is_signed_v<T>;
+
+
+template<typename T>
 concept Floating = std::is_floating_point_v<T>;
+
+
+template<typename T>
+concept UFloating = Floating<T> and std::is_unsigned_v<T>;
+
+
+template<typename T>
+concept SFloating = Floating<T> and std::is_signed_v<T>;
 
 
 template<typename T>

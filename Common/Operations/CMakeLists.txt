@@ -11,4 +11,5 @@ add_library(Operations
     INTERFACE
     Bitwise.hpp
     Inc.hpp
+    BitField.hpp
 )

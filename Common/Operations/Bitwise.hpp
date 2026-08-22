@@ -1,72 +1,69 @@
-#pragma once
-
+#ifndef SURE_COMMON_BASE_OPERATIONS_BITWISE_HPP_
+#define SURE_COMMON_BASE_OPERATIONS_BITWISE_HPP_
 
 #include "../Types/Inc.hpp"
 
 
-namespace sure::opr::bitwise {
+namespace sure::base {
 
-    template<typename T>
-    CONSTEXPR_ T mask(const U8 offset, const U8 width) noexcept {
-        return ((static_cast_(U8, 1) << width) - 1) << offset;
+    enum class BitStatus: U8 {
+        On  = 0,
+        Off = 1,
+    };
+
+    template<UIntegral T>
+    CONSTEXPR_ T bit_set_mask(T value, T mask) noexcept {
+        return static_cast<T>(value | mask);
     }
 
-    template<typename T>
-    CONSTEXPR_ T bit_mask(const U8 pos) noexcept {
-        return mask<T>(pos, 1);
+    template<UIntegral T>
+    CONSTEXPR_ T bit_get_mask(T value, T mask) noexcept {
+        return static_cast<T>(value & mask);
     }
 
-    template<typename T>
+    template<UIntegral T>
+    CONSTEXPR_ T bit_clear_mask(T value, T mask) noexcept {
+        return static_cast<T>(value & ~mask);
+    }
+
+    template<UIntegral T>
+    CONSTEXPR_ T bit_toggle_mask(T value, T mask) noexcept {
+        return static_cast<T>(value ^ mask);
+    }
+
+    template<UIntegral T>
     CONSTEXPR_ T bit_set(T value, const U8 pos) noexcept {
-        return static_cast_(T, value | bit_mask<T>(pos));
+        return static_cast<T>(bit_set_mask(value, static_cast<T>(1) << pos));
     }
 
-    template<typename T>
+    template<UIntegral T>
     CONSTEXPR_ T bit_get(T value, const U8 pos) noexcept {
-        return static_cast<T>(
-            value & (static_cast<T>(1) << pos)
-        );
+        return static_cast<T>(bit_get_mask(value, static_cast<T>(1) << pos));
     }
 
-    template<typename T>
-    CONSTEXPR_ T bit_set_many(T value, const U8 offset, const U8 width, T field) noexcept {
-        const T mask_val = mask<T>(offset, width);
-        return static_cast<T>(
-            (value & ~mask_val) |
-            ((field << offset) & mask)
-        );
-    }
-
-    template<typename T>
-    CONSTEXPR_ T bit_get_many(T value, const U8 width, const U8 offset) noexcept {
-        return static_cast<T>(
-            (value >> offset) & ((static_cast<T>(1) << width) - 1)
-        );
-    }
-
-    template<typename T>
+    template<UIntegral T>
     CONSTEXPR_ T bit_clear(T value, const U8 pos) noexcept {
-        return static_cast_(T, value & ~bit_mask<T>(pos));
+        return static_cast<T>(bit_clear_mask(value, static_cast<T>(1) << pos));
     }
 
-    template<typename T>
+    template<UIntegral T>
     CONSTEXPR_ T bit_toggle(T value, const U8 pos) noexcept {
-        return static_cast_(T, value ^ ~bit_mask<T>(pos));
+        return static_cast<T>(bit_toggle_mask(value, static_cast<T>(1) << pos));
     }
 
-    template<typename T>
+    template<UIntegral T>
     CONSTEXPR_ T bit_check(T value, const U8 pos) noexcept {
-        return static_cast_(T, value & bit_mask<T>(pos)) != 0;
+        return bit_get(value, pos) != 0;
     }
 
-    template<typename T>
-    CONSTEXPR_ T bit_any(T value, T mask) noexcept {
-        return (value & mask) != 0;
-    }
-
-    template<typename T>
-    CONSTEXPR_ T bit_all(T value, T mask) noexcept {
-        return (value & mask) == mask;
+    template<UIntegral T>
+    CONSTEXPR_ T bit_write(T value, U8 pos, const BitStatus status) noexcept {
+        if (status == BitStatus::On) {
+            return bit_set(value, pos);
+        }
+        if (status == BitStatus::Off) {
+            return bit_clear(value, pos);
+        }
     }
 
 
@@ -95,18 +92,20 @@ namespace sure::opr::bitwise {
         #define clz(x_) (U32)(__lzcnt64)(x_)
         #define ctz(x_) (U32)(__tzcnt_u64)(x_)
     #else
-        CONSTEXPR_ U32 clz(U64 x) {
+        template<UIntegral T>
+        CONSTEXPR_ T clz(T x) {
             U32 n = 0;
-            for (I32 i = sizeof(U64) * CHAR_SIZE_ - 1; i < sizeof(U64) * CHAR_SIZE_; ++i) {
+            for (I32 i = sizeof(T) * CHAR_SIZE_ - 1; i < sizeof(T) * CHAR_SIZE_; ++i) {
                 if ((x >> i) & 1) break;
                 ++n;
             }
             return n;
         }
 
-        CONSTEXPR_ U32 ctz(U64 x) {
+        template<UIntegral T>
+        CONSTEXPR_ T ctz(T x) {
             U32 n = 0;
-            for (I32 i = 0; i < sizeof(U64) * CHAR_SIZE_; ++i) {
+            for (I32 i = 0; i < sizeof(T * CHAR_SIZE_; ++i) {
                 if ((x >> i) & 1) break;
                 ++n;
             }
@@ -116,16 +115,20 @@ namespace sure::opr::bitwise {
 
 
 
-    CONSTEXPR_ U64 rotl(U64 value, U64 shift, U64 bitsize = sizeof(U64) * CHAR_SIZE_) {
+    template<UIntegral T>
+    CONSTEXPR_ T rotl(T value, T shift, T bitsize = sizeof(T) * CHAR_SIZE_) {
         shift %= bitsize;
         return (value << shift) | (value >> (bitsize - shift));
     }
 
 
 
-    CONSTEXPR_ U64 rotr(U64 value, U64 shift, U64 bitsize = sizeof(U64) * CHAR_SIZE_) {
+    template<UIntegral T>
+    CONSTEXPR_ T rotr(T value, T shift, T bitsize = sizeof(T) * CHAR_SIZE_) {
         shift %= bitsize;
         return (value >> shift) | (value << (bitsize - shift));
     }
 
 }
+
+#endif // SURE_COMMON_BASE_OPERATIONS_BITWISE_HPP_
