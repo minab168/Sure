@@ -1,7 +1,7 @@
 #pragma once
 
 
-#if __has_builtin(__remove_reference)
+#if SURE__HAS_BUILTIN_(__remove_reference)
     template<typename T> struct RemoveRef { using Type = __remove_reference(T); };
 #else
     template<typename T> struct RemoveRef { using Type = T; };

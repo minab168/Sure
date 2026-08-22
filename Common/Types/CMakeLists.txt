@@ -9,8 +9,7 @@
 
 add_library(Types
     INTERFACE
-    Clone.hpp
-    Inc.hpp
+        Inc.hpp
     Primitives/Limits.hpp
     Option.hpp
     Variant.hpp

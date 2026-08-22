@@ -34,7 +34,7 @@ static constexpr void get_timestamp(Char* buf, U64 size) {
     time_t t = time(NULL_PTR);
     struct tm tm_info = {};
 
-    #if OS_WINDOWS_ == 1
+    #if SURE__OS_WINDOWS_ == 1
         localtime_s(&tm_info, &t);
     #else
         localtime_r(&t, &tm_info);

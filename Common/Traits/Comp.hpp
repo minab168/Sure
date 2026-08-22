@@ -13,8 +13,8 @@ concept EqComparable = requires(T t, T u) {
 
 template<typename T>
 concept Ord = requires(T t, T u) {
-    { t < u } -> Boolean;
+    { t < u }  -> Boolean;
     { t <= u } -> Boolean;
-    { t > u } -> Boolean;
+    { t > u }  -> Boolean;
     { t >= u } -> Boolean;
 };

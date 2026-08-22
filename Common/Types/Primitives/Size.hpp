@@ -5,7 +5,7 @@
 
 #if defined(__CHAR_BIT__)
     #define CHAR_SIZE_ __CHAR_BIT__
-#elif defined(COMPILER_GCC_) || defined(COMPILER_CLANG_) || defined(COMPILER_MSVC_) || defined(__AVR__)
+#elif defined(SURE__COMPILER_GCC_) || defined(SURE__COMPILER_CLANG_) || defined(SURE__COMPILER_MSVC_) || defined(__AVR__)
     #define CHAR_SIZE_ 8
 #else
     #define CHAR_SIZE_ 16

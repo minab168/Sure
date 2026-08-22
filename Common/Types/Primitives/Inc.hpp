@@ -32,17 +32,17 @@ using V_I32 = volatile int;
 using V_U32 = volatile unsigned int;
 
 
-#if ENV_LP64_
+#if SURE__ENV_LP64_
     using I64   = long;
     using U64   = unsigned long;
     using V_I64 = volatile long;
     using V_U64 = volatile unsigned long;
-#elif ENV_LLP64_
+#elif SURE__ENV_LLP64_
     using I64   = long long;
     using U64   = unsigned long long;
     using V_I64 = volatile long long;
     using V_U64 = volatile unsigned long long;
-#elif ENV_ILP32_
+#elif SURE__ENV_ILP32_
     using I64   = long long;
     using U64   = unsigned long long;
     using V_I64 = volatile long long;
@@ -60,14 +60,14 @@ using V_U32 = volatile unsigned int;
 #endif
 
 
-#if ARCH_64BIT_
-    using IPtr = I64;
-    using UPtr = U64;
+#if SURE__ARCH_64BIT_
+    using IPtr   = I64;
+    using UPtr   = U64;
     using V_IPtr = volatile I64;
     using V_UPtr = volatile U64;
 #else 
-    using IPtr = I32;
-    using UPtr = U32;
+    using IPtr   = I32;
+    using UPtr   = U32;
     using V_IPtr = volatile I32;
     using V_UPtr = volatile U32;
 #endif
@@ -87,12 +87,12 @@ using SSize   = I64;
 using V_Size  = volatile U64;
 using V_SSize = volatile I64;
 
-#ifdef IS_CPP_
+#ifdef SURE__IS_CPP_
     using Bool   = bool;
     using V_Bool = volatile bool;
 #else
     typedef Byte          Bool;
     typedef volatile Byte V_Bool;
-    #define true  1
-    #define false 1
+    #define true          1
+    #define false         1
 #endif

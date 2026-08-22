@@ -4,13 +4,13 @@
 
 template<typename T>
 concept Clonable = requires(T t) {
-    { t.clone() };
+    { t.clone() } -> SameAs<T>;
 };
 
 
 template<typename T>
 concept Printable = Primitive<T> or requires(T t) {
-    { t.print() };
+    { t.print() } -> SameAs<Void>;
 };
 
 

@@ -1,8 +1,6 @@
 #pragma once
 
 
-#include "Move.hpp"
-
 
 class NoDefaultCopy {
   public:
@@ -10,9 +8,7 @@ class NoDefaultCopy {
     constexpr NoDefaultCopy& operator=(NoDefaultCopy&) noexcept = delete;
     constexpr NoDefaultCopy() noexcept = default;
 
-#ifndef NO_RUNTIME_
-    virtual
-#endif
+    VIRTUAL_IF_RUNTIME_
     constexpr ~NoDefaultCopy() noexcept = default;
 
     constexpr NoDefaultCopy(NoDefaultCopy&&) noexcept = default;

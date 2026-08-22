@@ -4,7 +4,7 @@
 #include "./Platform.hpp"
 
 
-#ifdef __cplusplus
+#ifdef SURE__IS_CPP_
     #define NULL_PTR nullptr
 #else
     #define NULL_PTR ((void*)0)
@@ -23,28 +23,43 @@
 #define array_len_(array_name_) (sizeof(array_name_) / sizeof(*array_name_))
 
 
-#if IS_CPP_ 
+#if SURE__IS_CPP_
     #define CONSTEXPR_ constexpr
 #else 
     #define CONSTEXPR_
 #endif
 
 
-#if defined(COMPILER_GCC_) || defined(COMPILER_CLANG_)
+#if defined(SURE__COMPILER_GCC_) || defined(SURE__COMPILER_CLANG_)
     #define todo_(msg_) do_pragma_(message("TODO: " #msg_))
 #else
     #define todo_(msg_)
 #endif
 
 
-#if defined(COMPILER_GCC_) || defined(COMPILER_CLANG_)
+#if defined(SURE__COMPILER_GCC_) || defined(SURE__COMPILER_CLANG_)
     #define UNSAFE_ __attribute__((error("This is an unsafe call. wrap it with `unsafe_block_` macro")))
-#elif defined(COMPILER_MSVC_)
+#elif defined(SURE__COMPILER_MSVC_)
     #define UNSAFE_ __declspec(deprecated("This is an unsafe call. wrap it with `unsafe_block_` macro"))
 #else
     #pragma message("Warning: `UNSAFE_` macro isn ot supported on your compiler")
     #define UNSAFE_
 #endif
+
+
+#if SURE__IS_CPP_
+    #define static_cast_(type_, value_) static_cast<type_>(value_)
+#elif
+    #define static_cast_(type_, value_) (type_) value_
+#endif
+
+
+#if defined(SURE__HAS_RUNTIME_)
+    #define VIRTUAL_IF_RUNTIME_ virtual
+#else
+    #define VIRTUAL_IF_RUNTIME_
+#endif
+
 
 
 /* #if defined(COMPILER_GCC_) || defined(COMPILER_CLANG_)
