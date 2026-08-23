@@ -3,6 +3,7 @@
 
 
 #include "Bitwise.hpp"
+#include "BitField.hpp"
 
 
 #endif // SURE_COMMON_OPERATIONS_INC_HPP_
