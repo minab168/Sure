@@ -69,7 +69,7 @@ namespace sure::base {
 
     #if defined(SURE__COMPILER_GCC_) || defined(SURE__COMPILER_CLANG_)
         #define pop_count_(x_) __builtin_popcountll(x_)
-    #elif defined(COMPILER_MSVC_)
+    #elif defined(SURE__COMPILER_MSVC_)
         #include <intrin.h>
         #define pop_count_(x_) __popcnt64(x_)
     #else
@@ -84,10 +84,10 @@ namespace sure::base {
     #endif
 
 
-    #if defined(COMPILER_GCC_) || defined(COMPILER_CLANG_)
+    #if defined(SURE__COMPILER_GCC_) || defined(SURE__COMPILER_CLANG_)
         #define clz(x_) __builtin_clzll(x_)
         #define ctz(x_) __builtin_ctzll(x_)
-    #elif defined(COMPILER_MSVC_)
+    #elif defined(SURE__COMPILER_MSVC_)
         #include <intrin.h>
         #define clz(x_) (U32)(__lzcnt64)(x_)
         #define ctz(x_) (U32)(__tzcnt_u64)(x_)
@@ -105,7 +105,7 @@ namespace sure::base {
         template<UIntegral T>
         CONSTEXPR_ T ctz(T x) {
             U32 n = 0;
-            for (I32 i = 0; i < sizeof(T * CHAR_SIZE_; ++i) {
+            for (I32 i = 0; i < sizeof(T * CHAR_SIZE_); ++i) {
                 if ((x >> i) & 1) break;
                 ++n;
             }
