@@ -1,6 +1,7 @@
 #ifndef SURE_COMMON_BASE_OPERATIONS_BITFIELD_HPP_
 #define SURE_COMMON_BASE_OPERATIONS_BITFIELD_HPP_
 
+#include "Bitwise.hpp"
 #include "../Base/Lang.hpp"
 #include "../Types/Primitives/Inc.hpp"
 #include "../Types/Primitives/Size.hpp"
@@ -9,13 +10,18 @@
 
 namespace sure::base {
 
+    enum class BitStatus: U8 {
+        Off = 0,
+        On  = 1,
+    };
+
     template<UIntegral T, U8 OFFSET, U8 WIDTH>
     class BitField {
         static_assert(OFFSET + WIDTH <= sizeof(T) * CHAR_SIZE_);
 
       public:
         static CONSTEXPR_ T mask() noexcept {
-            if constexpr (sizeof(T) == WIDTH) {
+            if constexpr (sizeof(T) * CHAR_SIZE_ == WIDTH) {
                 return ~static_cast<T>(0);
             }
             else {
@@ -24,21 +30,17 @@ namespace sure::base {
         }
 
         static T write(T reg, T value) noexcept {
-            let reg_cleared   = reg & ~(BitField::mask() << OFFSET);
-            let value_shifted = (value & BitField::mask()) << OFFSET;
-            return reg_cleared | value_shifted;
+            let reg_cleared = bit_clear_mask(reg, BitField::mask() << OFFSET);
+            let value_shifted = bit_get_mask(value, BitField::mask()) << OFFSET;
+            return bit_set_mask(reg_cleared, value_shifted);
         }
 
-        static T extract(T reg) noexcept {
-            return (reg & BitField::mask() << OFFSET) >> OFFSET;
+        static T extract(T reg) noexcept requires (WIDTH > 1) {
+            return bit_get_mask(reg >> OFFSET, BitField::mask());
         }
 
-        static Bool is_enabled(T reg) noexcept {
-            return (reg & BitField::mask() << OFFSET) == 1;
-        }
-
-        static Bool is_disabled(T reg) noexcept {
-            return (reg & BitField::mask() << OFFSET) == 0;
+        static BitStatus extract(T reg) noexcept requires (WIDTH == 1) {
+            return bit_get(reg, OFFSET) == 0 ? BitStatus::Off : BitStatus::On;
         }
 
         static Bool is_valid(T value) noexcept {

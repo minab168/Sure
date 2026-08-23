@@ -6,10 +6,15 @@
 
 namespace sure::base {
 
-    enum class BitStatus: U8 {
-        On  = 0,
-        Off = 1,
-    };
+    template<UIntegral T>
+    CONSTEXPR_ T bit_lsh(T value, U8 offset) noexcept {
+        return static_cast<T>(value << offset);
+    }
+
+    template<UIntegral T>
+    CONSTEXPR_ T bit_rsh(T value, U8 offset) noexcept {
+        return static_cast<T>(value >> offset);
+    }
 
     template<UIntegral T>
     CONSTEXPR_ T bit_set_mask(T value, T mask) noexcept {
@@ -38,7 +43,7 @@ namespace sure::base {
 
     template<UIntegral T>
     CONSTEXPR_ T bit_get(T value, const U8 pos) noexcept {
-        return static_cast<T>(bit_get_mask(value, static_cast<T>(1) << pos));
+        return static_cast<T>(bit_get_mask(value >> pos, 1));
     }
 
     template<UIntegral T>
@@ -52,18 +57,8 @@ namespace sure::base {
     }
 
     template<UIntegral T>
-    CONSTEXPR_ T bit_check(T value, const U8 pos) noexcept {
-        return bit_get(value, pos) != 0;
-    }
-
-    template<UIntegral T>
-    CONSTEXPR_ T bit_write(T value, U8 pos, const BitStatus status) noexcept {
-        if (status == BitStatus::On) {
-            return bit_set(value, pos);
-        }
-        if (status == BitStatus::Off) {
-            return bit_clear(value, pos);
-        }
+    CONSTEXPR_ Bool bit_check(T value, const U8 pos) noexcept {
+        return bit_get(value, pos) == 1;
     }
 
 
@@ -95,7 +90,7 @@ namespace sure::base {
         template<UIntegral T>
         CONSTEXPR_ T clz(T x) {
             U32 n = 0;
-            for (I32 i = sizeof(T) * CHAR_SIZE_ - 1; i < sizeof(T) * CHAR_SIZE_; ++i) {
+            for (I32 i = static_cast<I32>(sizeof(T) * CHAR_SIZE_) - 1; i >= 0; --i) {
                 if ((x >> i) & 1) break;
                 ++n;
             }
@@ -105,7 +100,7 @@ namespace sure::base {
         template<UIntegral T>
         CONSTEXPR_ T ctz(T x) {
             U32 n = 0;
-            for (I32 i = 0; i < sizeof(T * CHAR_SIZE_); ++i) {
+            for (I32 i = 0; i < sizeof(T) * CHAR_SIZE_; ++i) {
                 if ((x >> i) & 1) break;
                 ++n;
             }
@@ -118,6 +113,7 @@ namespace sure::base {
     template<UIntegral T>
     CONSTEXPR_ T rotl(T value, T shift, T bitsize = sizeof(T) * CHAR_SIZE_) {
         shift %= bitsize;
+        if (shift == 0) return value;
         return (value << shift) | (value >> (bitsize - shift));
     }
 
@@ -126,6 +122,7 @@ namespace sure::base {
     template<UIntegral T>
     CONSTEXPR_ T rotr(T value, T shift, T bitsize = sizeof(T) * CHAR_SIZE_) {
         shift %= bitsize;
+        if (shift == 0) return value;
         return (value >> shift) | (value << (bitsize - shift));
     }
 
