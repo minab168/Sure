@@ -7,11 +7,17 @@
 # ──────────────────────────────────────────────
 
 
-add_library(Operations
-    INTERFACE
-    Bitwise.hpp
-    Inc.hpp
-    BitField.hpp
+set(SRC
+    Bitwise.cpp
+    BitField.cpp
 )
 
-add_subdirectory(Tests)
+add_executable(TestOperators ${SRC})
+
+target_link_libraries(TestOperators
+    gtest
+    gtest_main
+)
+
+
+add_test(NAME OperatorsTest COMMAND TestOperators)

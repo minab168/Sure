@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
-project(Sure LANGUAGES CXX)
+project(Sure
+    VERSION 0.1.0
+    DESCRIPTION "A lightweight, reliable, and predictable C and C++ framework for developing bare-metal and embedded systems, designed to provide a solid foundation with zero-cost abstractions."
+    LANGUAGES CXX
+)
 
 
 set(CMAKE_CXX_STANDARD 20)
@@ -19,11 +23,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Build/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Build/bin)
 
 
-enable_testing()
-
-
+add_subdirectory(Contribs/googletest)
 add_subdirectory(Common)
-#add_subdirectory(Contribs/googletest)
+
+
+enable_testing()
 
 
 target_include_directories(Sure INTERFACE
