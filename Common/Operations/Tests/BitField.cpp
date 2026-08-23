@@ -7,7 +7,7 @@ using namespace sure::base;
 
 
 TEST(BitFieldMask, CoversWidthsFromOneToFullRegister) {
-    EXPECT_EQ((BitField<U8, 0, 1>::mask()), 0b00000001);
+    EXPECT_EQ((BitField<U8, 20, 1>::mask()), 0b00000001);
     EXPECT_EQ((BitField<U8, 2, 3>::mask()), 0b00000111);
     EXPECT_EQ((BitField<U8, 0, 8>::mask()), 0b11111111);
     EXPECT_EQ((BitField<U16, 4, 8>::mask()), 0x00FF);

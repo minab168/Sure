@@ -15,9 +15,11 @@ namespace sure::base {
         On  = 1,
     };
 
+
     template<UIntegral T, U8 OFFSET, U8 WIDTH>
     class BitField {
-        static_assert(OFFSET + WIDTH <= sizeof(T) * CHAR_SIZE_);
+        static_assert(WIDTH > 0, "Width must be greater than 0");
+        static_assert(OFFSET + WIDTH <= sizeof(T) * CHAR_SIZE_, "BitField range exceeds the size of the underlying type.");
 
       public:
         static CONSTEXPR_ T mask() noexcept {

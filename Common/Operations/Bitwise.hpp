@@ -6,13 +6,27 @@
 
 namespace sure::base {
 
+    /**
+     * Performs a logical left shift on an unsigned integer value.
+     *
+     * NOTE: The caller is responsible for ensuring thet `offset` is less than
+     * the bit width of `T`. Passing an offset equal to or greater than
+     * the bit width of `T` results in undefined behaviour.
+    */
     template<UIntegral T>
-    CONSTEXPR_ T bit_lsh(T value, U8 offset) noexcept {
+    CONSTEXPR_ T bit_lsh(T value, const U8 offset) noexcept {
         return static_cast<T>(value << offset);
     }
 
+    /**
+     * Performs a logical right shift on an unsigned integer value.
+     *
+     * NOTE: The caller is responsible for ensuring thet `offset` is less than
+     * the bit width of `T`. Passing an offset equal to or greater than
+     * the bit width of `T` results in undefined behaviour.
+    */
     template<UIntegral T>
-    CONSTEXPR_ T bit_rsh(T value, U8 offset) noexcept {
+    CONSTEXPR_ T bit_rsh(T value, const U8 offset) noexcept {
         return static_cast<T>(value >> offset);
     }
 
