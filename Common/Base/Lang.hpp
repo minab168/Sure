@@ -50,7 +50,7 @@
 
 #if SURE__IS_CPP_
     #define static_cast_(type_, value_) static_cast<type_>(value_)
-#elif
+#else
     #define static_cast_(type_, value_) (type_) value_
 #endif
 
@@ -76,7 +76,7 @@
 //         block_ \
 //         __pragma(warning(pop)) \
 // #else
-//     #pragma message("Warning: `unsafe_block_` macro isn ot supported on your compiler")
+//     #pragma message("Warning: `unsafe_block_` macro is not supported on your compiler")
 //     #define unsafe_block_(block_)
 // #endif */
 

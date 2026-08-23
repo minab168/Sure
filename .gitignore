@@ -2,13 +2,13 @@
 cmake-build-*/
 build/
 Build/
+*build*
 CMakeFiles/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
 compile_commands.json
 
-.idea/
 *.iml
 
 *.out
