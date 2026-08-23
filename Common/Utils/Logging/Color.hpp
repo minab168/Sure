@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SURE_COMMON_UTILS_LOGGING_COLOR_HPP_
+#define SURE_COMMON_UTILS_LOGGING_COLOR_HPP_
 
 
 /* Reset */
@@ -57,3 +58,6 @@
 #define STYLE_BLINK        "\x1b[5m"
 #define STYLE_REVERSE      "\x1b[7m"
 #define STYLE_HIDDEN       "\x1b[8m"
+
+
+#endif // SURE_COMMON_UTILS_LOGGING_COLOR_HPP_

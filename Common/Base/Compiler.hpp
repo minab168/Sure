@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SURE_COMMON_BASE_COMPILER_HPP_
+#define SURE_COMMON_BASE_COMPILER_HPP_
+
 
 #include "./Platform.hpp"
 
@@ -162,3 +164,6 @@
         #define SURE__HAS_BUILTIN_(x) 0
     #endif
 #endif
+
+
+#endif // SURE_COMMON_BASE_COMPILER_HPP_

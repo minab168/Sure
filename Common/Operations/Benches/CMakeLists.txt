@@ -7,13 +7,16 @@
 # ──────────────────────────────────────────────
 
 
-add_library(Operations
-    INTERFACE
-    Bitwise.hpp
-    Inc.hpp
-    BitField.hpp
+set(SRC
+    BitField.cpp
 )
 
-add_subdirectory(Tests)
+add_executable(BenchOperations ${SRC})
 
-add_subdirectory(Benches)
+if (MSVC)
+    target_compile_options(BenchOperations PRIVATE /O2 /Ob3)
+else ()
+    target_compile_options(BenchOperations PRIVATE -O3)
+endif ()
+
+target_compile_definitions(BenchOperations PRIVATE NDEBUG)

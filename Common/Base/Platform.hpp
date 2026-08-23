@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SURE_COMMON_BASE_PLATFORM_HPP_
+#define SURE_COMMON_BASE_PLATFORM_HPP_
 
 
 // ------------------------------- Compiler detection -------------------------------
@@ -204,3 +204,6 @@
 #else
     #define SURE__ENV_ILP32_ 0
 #endif
+
+
+#endif // SURE_COMMON_BASE_PLATFORM_HPP_

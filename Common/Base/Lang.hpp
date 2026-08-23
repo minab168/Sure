@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SURE_COMMON_BASE_LANG_HPP_
+#define SURE_COMMON_BASE_LANG_HPP_
 
 
 #include "./Platform.hpp"
@@ -78,3 +79,6 @@
 //     #pragma message("Warning: `unsafe_block_` macro isn ot supported on your compiler")
 //     #define unsafe_block_(block_)
 // #endif */
+
+
+#endif // SURE_COMMON_BASE_LANG_HPP_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SURE_COMMON_INC_HPP_
+#define SURE_COMMON_INC_HPP_
 
 
 #include "Base/Inc.hpp"
@@ -6,3 +7,6 @@
 #include "Ownership/Inc.hpp"
 #include "Traits/Inc.hpp"
 #include "Types/Inc.hpp"
+
+
+#endif // SURE_COMMON_INC_HPP_

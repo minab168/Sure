@@ -3,6 +3,9 @@
 #include "../BitField.hpp"
 
 
+using namespace sure::base;
+
+
 TEST(BitFieldMask, CoversWidthsFromOneToFullRegister) {
     EXPECT_EQ((BitField<U8, 0, 1>::mask()), 0b00000001);
     EXPECT_EQ((BitField<U8, 2, 3>::mask()), 0b00000111);
@@ -12,8 +15,8 @@ TEST(BitFieldMask, CoversWidthsFromOneToFullRegister) {
 
 
 TEST(BitFieldWrite, ReplacesOnlySelectedBits) {
-    constexpr U8 initial = 0b10101101;
-    constexpr U8 expected = 0b10001001;
+    constexpr U8 initial  = 0b10101101;
+    constexpr U8 expected = 0b10101001;
 
     EXPECT_EQ((BitField<U8, 2, 3>::write(initial, 0b010)), expected);
 }
@@ -27,7 +30,7 @@ TEST(BitFieldWrite, TruncatesValuesThatDoNotFit) {
 
 TEST(BitFieldExtract, ExtractsMultiBitFieldsAtRegisterEdges) {
     EXPECT_EQ((BitField<U8, 0, 3>::extract(0b11100101)), 0b101);
-    EXPECT_EQ((BitField<U8, 5, 3>::extract(0b10100101)), 0b101);
+    EXPECT_EQ((BitField<U8, 4, 3>::extract(0b10100101)), 0b010);
     EXPECT_EQ((BitField<U16, 0, 16>::extract(0xBEEF)), 0xBEEF);
 }
 

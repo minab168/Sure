@@ -1,5 +1,10 @@
-#pragma once
+#ifndef SURE_COMMON_BASE_INC_HPP_
+#define SURE_COMMON_BASE_INC_HPP_
+
 
 #include "./Compiler.hpp"
 #include "./Platform.hpp"
 #include "./Lang.hpp"
+
+
+#endif // SURE_COMMON_BASE_INC_HPP_

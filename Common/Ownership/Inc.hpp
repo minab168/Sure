@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SURE_COMMON_OWNERSHIP_INC_HPP_
+#define SURE_COMMON_OWNERSHIP_INC_HPP_
 
 
 class NoDefaultCopy {
@@ -14,3 +14,6 @@ class NoDefaultCopy {
     constexpr NoDefaultCopy(NoDefaultCopy&&) noexcept = default;
     constexpr NoDefaultCopy& operator=(NoDefaultCopy&&) noexcept = default;
 };
+
+
+#endif // SURE_COMMON_OWNERSHIP_INC_HPP_

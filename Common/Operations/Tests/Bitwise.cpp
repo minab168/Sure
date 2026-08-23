@@ -2,10 +2,11 @@
 
 #include "../Bitwise.hpp"
 
+using namespace sure::base;
 
 TEST(BitwiseMask, SetGetClearAndToggle) {
     constexpr U8 value = 0b00001100;
-    constexpr U8 mask = 0b00000110;
+    constexpr U8 mask  = 0b00000110;
 
     EXPECT_EQ(bit_set_mask(value, mask), 0b00001110);
     EXPECT_EQ(bit_get_mask(value, mask), 0b00000100);

@@ -1,10 +1,9 @@
-#pragma once
+#ifndef SURE_COMMON_UTILS_LOGGING_LOG_HPP_
+#define SURE_COMMON_UTILS_LOGGING_LOG_HPP_
 
-#include <format>
-#include <stdio.h>
-#include <time.h>
+
+#include <ctime>
 #include "Color.hpp"
-#include "../../Base/Lang.hpp"
 #include "../../Types/Primitives/Inc.hpp"
 
 
@@ -30,9 +29,9 @@
     } while(false)
 
 
-static constexpr void get_timestamp(Char* buf, U64 size) {
+static void get_timestamp(Char* buf, const U64 size) {
     time_t t = time(NULL_PTR);
-    struct tm tm_info = {};
+    tm tm_info = {};
 
     #if SURE__OS_WINDOWS_ == 1
         localtime_s(&tm_info, &t);
@@ -65,3 +64,6 @@ static constexpr void get_timestamp(Char* buf, U64 size) {
 #else
 #  define log_debug_(fmt_, ...) do {} while(false)
 #endif
+
+
+#endif // SURE_COMMON_UTILS_LOGGING_LOG_HPP_

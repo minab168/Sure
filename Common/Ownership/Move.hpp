@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SURE_COMMON_OWNERSHIP_MOVE_HPP_
+#define SURE_COMMON_OWNERSHIP_MOVE_HPP_
 
 
 #include "../Base/Compiler.hpp"
@@ -35,3 +36,4 @@ constexpr T&& do_forward(typename RemoveRef<T>::Type&& obj) noexcept {
 }
 
 
+#endif // SURE_COMMON_OWNERSHIP_MOVE_HPP_

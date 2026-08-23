@@ -38,27 +38,27 @@ namespace sure::base {
 
     template<UIntegral T>
     CONSTEXPR_ T bit_set(T value, const U8 pos) noexcept {
-        return static_cast<T>(bit_set_mask(value, static_cast<T>(1) << pos));
+        return static_cast<T>(bit_set_mask<T>(value, static_cast<T>(1) << pos));
     }
 
     template<UIntegral T>
     CONSTEXPR_ T bit_get(T value, const U8 pos) noexcept {
-        return static_cast<T>(bit_get_mask(value >> pos, 1));
+        return static_cast<T>(bit_get_mask<T>(value >> pos, 1));
     }
 
     template<UIntegral T>
     CONSTEXPR_ T bit_clear(T value, const U8 pos) noexcept {
-        return static_cast<T>(bit_clear_mask(value, static_cast<T>(1) << pos));
+        return static_cast<T>(bit_clear_mask<T>(value, static_cast<T>(1) << pos));
     }
 
     template<UIntegral T>
     CONSTEXPR_ T bit_toggle(T value, const U8 pos) noexcept {
-        return static_cast<T>(bit_toggle_mask(value, static_cast<T>(1) << pos));
+        return static_cast<T>(bit_toggle_mask<T>(value, static_cast<T>(1) << pos));
     }
 
     template<UIntegral T>
     CONSTEXPR_ Bool bit_check(T value, const U8 pos) noexcept {
-        return bit_get(value, pos) == 1;
+        return bit_get<T>(value, pos) == 1;
     }
 
 

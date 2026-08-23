@@ -29,21 +29,21 @@ namespace sure::base {
             }
         }
 
-        static T write(T reg, T value) noexcept {
-            let reg_cleared = bit_clear_mask(reg, BitField::mask() << OFFSET);
-            let value_shifted = bit_get_mask(value, BitField::mask()) << OFFSET;
-            return bit_set_mask(reg_cleared, value_shifted);
+        static CONSTEXPR_ T write(T reg, T value) noexcept {
+            let reg_cleared = bit_clear_mask<T>(reg, BitField::mask() << OFFSET);
+            let value_shifted = bit_get_mask<T>(value, BitField::mask()) << OFFSET;
+            return bit_set_mask<T>(reg_cleared, value_shifted);
         }
 
-        static T extract(T reg) noexcept requires (WIDTH > 1) {
-            return bit_get_mask(reg >> OFFSET, BitField::mask());
+        static CONSTEXPR_ T extract(T reg) noexcept requires (WIDTH > 1) {
+            return bit_get_mask<T>(reg >> OFFSET, BitField::mask());
         }
 
-        static BitStatus extract(T reg) noexcept requires (WIDTH == 1) {
-            return bit_get(reg, OFFSET) == 0 ? BitStatus::Off : BitStatus::On;
+        static CONSTEXPR_ BitStatus extract(T reg) noexcept requires (WIDTH == 1) {
+            return bit_get<T>(reg, OFFSET) == 0 ? BitStatus::Off : BitStatus::On;
         }
 
-        static Bool is_valid(T value) noexcept {
+        static CONSTEXPR_ Bool is_valid(T value) noexcept {
             return (value | BitField::mask()) == BitField::mask();
         }
     };
