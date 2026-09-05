@@ -95,3 +95,34 @@ template<typename T1, typename T2> struct IsSameByRemovingRefConstVolatile : pub
 
 template<typename T, typename U>
 concept SameAs = requires { typename EnableIf<IsSameByRemovingRefConstVolatile<T, U>::value>; };
+
+
+#if SURE__HAS_BUILTIN_(__remove_cv)
+    template<typename T>
+    struct RemoveCV {
+        using type = __remove_cv(T);
+    };
+#else
+    template<typename T>
+    struct RemoveCV {
+        using type = T;
+    };
+
+    template<typename T>
+    struct RemoveCV<const T> {
+        using type = T;
+    };
+
+    template<typename T>
+    struct RemoveCV<volatile T> {
+        using type = T;
+    };
+
+    template<typename T>
+    struct RemoveCV<const volatile T> {
+        using type = T;
+    };
+#endif
+
+template<typename _Tp>
+using RemoveCVT = typename RemoveCV<_Tp>::type;

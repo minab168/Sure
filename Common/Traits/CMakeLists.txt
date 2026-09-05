@@ -11,10 +11,9 @@ add_library(Traits
     INTERFACE
     Arithmetic.hpp
     Base.hpp
-        Common.hpp
+    Common.hpp
     Comp.hpp
     Creation.hpp
-    Exception.hpp
     From.hpp
     Helpers.hpp
     Inc.hpp

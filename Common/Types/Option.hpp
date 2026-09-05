@@ -5,7 +5,6 @@
 #include "../Base/Interface/Lang.hpp"
 #include "../Ownership/Inc.hpp"
 #include "../Traits/Creation.hpp"
-#include "../Traits/Exception.hpp"
 #include "../Traits/Primitives.hpp"
 #include "../Traits/Common.hpp"
 #include "../Utils/Abort.hpp"

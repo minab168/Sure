@@ -6,7 +6,6 @@
 #include "Comp.hpp"
 #include "Common.hpp"
 #include "Creation.hpp"
-#include "Exception.hpp"
 #include "From.hpp"
 #include "Iterator.hpp"
 #include "Helpers.hpp"

@@ -1,5 +1,6 @@
 #pragma once
 #include "Base.hpp"
+#include "Helpers.hpp"
 
 
 template<typename T>
@@ -38,9 +39,12 @@ concept Constructible =
 #endif
 
 
+template<typename T>
+concept DestructibleThrow = std::is_destructible<>;
+
 
 template<typename T>
-concept Destructible = requires(T t) { { t.~T() } noexcept; };  // FIXME: use builtine
+concept Destructible = IsNothrowDestructible<T>::value;
 
 
 template<typename T>
