@@ -20,6 +20,7 @@ add_library(Types
     UPtr.hpp
     Variant.hpp
         Iterator.hpp
+        Array.inl
 )
 
 
