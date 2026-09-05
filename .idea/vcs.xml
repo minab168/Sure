@@ -36,12 +36,9 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../Chat/Server_Rust" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../MasirWorkspace" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../SimpleLang" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../SimpleLang/Contribs/Sure" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../SimpleLang/Contribs/Sure/Contribs/googletest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Contribs/googletest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../pass_time" vcs="Git" />
   </component>
 </project>

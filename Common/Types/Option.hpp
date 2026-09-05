@@ -55,7 +55,7 @@ template<typename ValueT>
       Destructible<ValueT> and
       NoThrowMovable<ValueT>
   )
-class Option final: NoDefaultCopy /*, public Clone<Option<ValueT>> */ {
+class Option final: NoDefaultCopy { // Satisfied Clonable
 
     static_assert(MoveConstructible<ValueT>, "Option<ValueT> requires ValueT to be movable object!");
     static_assert(Destructible<ValueT>, "Option<ValueT> requires ValueT to be destructible object!");

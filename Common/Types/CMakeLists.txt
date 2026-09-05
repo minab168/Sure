@@ -11,6 +11,7 @@ add_library(Types
     INTERFACE
     Array.hpp
     Inc.hpp
+    IndexSeq.hpp
     Option.hpp
     Primitives/Inc.hpp
     Primitives/Limits.hpp

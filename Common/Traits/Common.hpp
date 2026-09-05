@@ -3,7 +3,7 @@
 
 
 template<typename T>
-concept Clonable = requires(T t) {
+concept Clonable = requires(const T& t) {
     { t.clone() } -> SameAs<T>;
 };
 
