@@ -24,7 +24,7 @@ namespace sure {
         IntSeq<T, __integer_pack(Num)...>;
     #endif
 
-    template<size_t Num>
+    template<Size Num>
     using MakeIdxSeq = MakeIntSeq<Size, Num>;
 }
 

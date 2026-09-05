@@ -3,8 +3,9 @@
 
 
 #include <ctime>
-#include "Color.hpp"
+#include "../../Base/Interface/Lang.hpp"
 #include "../../Types/Primitives/Inc.hpp"
+#include "Color.hpp"
 
 
 #define LOG_COLOR_RESET   COLOR_RESET

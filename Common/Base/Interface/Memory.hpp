@@ -2,6 +2,7 @@
 #define SURE_COMMON_BASE_MEMORY_HPP_
 
 
+#include <new> // TODO: remove
 #include "Compiler.hpp"
 #include "../../Types/Primitives/Inc.hpp"
 
@@ -20,6 +21,14 @@ namespace sure {
     extern const NoThrow nothrow;
 }
 
+
+// NODISCARD_ inline Void* operator new(unsigned long long, Void* __p) noexcept { return __p; }
+//
+// NODISCARD_ inline Void* operator new[](unsigned long long, Void* __p) noexcept { return __p; }
+//
+// inline Void operator delete  (Void*, Void*) noexcept { }
+//
+// inline Void operator delete[](Void*, Void*) noexcept { }
 
 #ifdef SURE__NO_HEAP_
     #define HEAP_ALLOC_FORBIDDEN_MESSAGE  "Heap allocation is forbidden!"

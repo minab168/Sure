@@ -3,7 +3,7 @@
 
 
 template<typename T>
-concept DefaultConstructible =
+concept DefaultConstructibleThrow =
 #if SURE__HAS_BUILTIN_(__is_constructible)
     __is_constructible(T);
 #else
@@ -12,11 +12,29 @@ concept DefaultConstructible =
 
 
 template<typename T, typename ...Args>
-concept Constructible =
+concept DefaultConstructible =
+#if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
+    __is_nothrow_constructible(T);
+#else
+        DefaultConstructibleThrow<T>
+#endif
+
+
+template<typename T, typename ...Args>
+concept ConstructibleThrow =
 #if SURE__HAS_BUILTIN_(__is_constructible)
     __is_constructible(T, Args...);
 #else
     requires(Args&&... args) { T(static_cast<Args&&>(args)...); T{static_cast<Args&&>(args)...}; };
+#endif
+
+
+template<typename T, typename ...Args>
+concept Constructible =
+#if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
+    __is_nothrow_constructible(T, Args...);
+#else
+        ConstructibleThrow<T>
 #endif
 
 
@@ -26,7 +44,7 @@ concept Destructible = requires(T t) { { t.~T() } noexcept; };  // FIXME: use bu
 
 
 template<typename T>
-concept CopyConstructible =
+concept CopyConstructibleThrow =
 #if SURE__HAS_BUILTIN_(__is_constructible)
     __is_constructible(T, AddLvalueT<const T>);
 #else
@@ -34,10 +52,20 @@ concept CopyConstructible =
 #endif
 
 
+
 template<typename T>
-concept MoveConstructible =
+concept CopyConstructible =
+#if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
+    __is_nothrow_constructible(T, AddLvalueT<const T>);
+#else
+        CopyConstructibleThrow<T>
+#endif
+
+
+template<typename T>
+concept MoveConstructibleThrow =
 #if SURE__HAS_BUILTIN_(__is_constructible)
-    __is_constructible(T, AddRvalueT<const T>);
+    __is_constructible(T, AddRvalueT<T>);
 #else
         requires(T t) { T(static_cast<T&&>(t)); T{static_cast<T&&>(t)}; };
 #endif
@@ -45,7 +73,17 @@ concept MoveConstructible =
 
 
 template<typename T>
-concept CopyAssignable =
+concept MoveConstructible =
+#if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
+    __is_nothrow_constructible(T, AddRvalueT<T>);
+#else
+        MoveConstructibleThrow<T>
+#endif
+
+
+
+template<typename T>
+concept CopyAssignableThrow =
 #if SURE__HAS_BUILTIN_(__is_assignable)
     __is_assignable(AddLvalueT<T>, AddLvalueT<const T>);
 #else
@@ -55,7 +93,17 @@ concept CopyAssignable =
 
 
 template<typename T>
-concept MoveAssignable =
+concept CopyAssignable =
+#if SURE__HAS_BUILTIN_(__is_nothrow_assignable)
+    __is_nothrow_assignable(AddLvalueT<T>, AddLvalueT<const T>);
+#else
+        CopyAssignableThrow<T>
+#endif
+
+
+
+template<typename T>
+concept MoveAssignableThrow =
 #if SURE__HAS_BUILTIN_(__is_assignable)
     __is_assignable(AddLvalueT<T>, AddRvalueT<T>);
 #else
@@ -65,7 +113,17 @@ concept MoveAssignable =
 
 
 template<typename T>
-concept Copyable = CopyConstructible<T> and CopyAssignable<T> and Destructible<T>;
+concept MoveAssignable =
+#if SURE__HAS_BUILTIN_(__is_nothrow_assignable)
+    __is_nothrow_assignable(AddLvalueT<T>, AddRvalueT<T>);
+#else
+        MoveAssignableThrow<T>
+#endif
+
+
+
+template<typename T>
+concept Copyable = CopyConstructibleThrow<T> and CopyAssignableThrow<T> and Destructible<T>;
 
 
 

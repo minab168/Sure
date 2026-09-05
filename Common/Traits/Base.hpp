@@ -24,14 +24,14 @@ template<typename T, typename = void> struct AddRvalue { using type = T; };
 
 template<typename T> struct AddRvalue<T, VoidT<T&&>> { using type = T&&; };
 
-template<typename T> using AddRvalueT = AddRvalue<T>::type;
+template<typename T> using AddRvalueT = typename AddRvalue<T>::type;
 
 
 template<typename T, typename = void> struct AddLvalue { using type = T; };
 
 template<typename T> struct AddLvalue<T, VoidT<T&>> { using type = T&; };
 
-template<typename _Tp> using AddLvalueT = AddLvalue<_Tp>::type;
+template<typename _Tp> using AddLvalueT = typename AddLvalue<_Tp>::type;
 
 
 template<typename T> struct RemoveConstVolatile { typedef T Type; };

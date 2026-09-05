@@ -2,6 +2,7 @@
 
 
 #include <type_traits> // TODO remove dependency of std
+#include "./Primitives.hpp"
 
 
 template<typename T>
