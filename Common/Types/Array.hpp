@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "IndexSeq.hpp"
+#include "Option.hpp"
 #include "../Ownership/Inc.hpp"
 #include "../Ownership/Move.hpp"
 #include "../Traits/Common.hpp"
 #include "../Traits/Creation.hpp"
+#include "../Utils/Check.hpp"
 #include "Primitives/Inc.hpp"
 
 
@@ -45,7 +47,26 @@ namespace sure {
 
 
         Array clone() const& noexcept requires (Clonable<T> or CopyConstructible<T>) {
+            #if !SURE__HAS_BUILTIN_(__make_integer_seq)
+                static_assert(
+                    N <= 512,
+                    "Array<T,N> with N . 512 needs compiler builtin support (__make_integer_seq)"
+                    "for index-sequence generation, or a higher -ftemplate-depth if your compiler"
+                    "supports the recursive fallback."
+                );
+            #endif
             return this->_clone_impl(MakeIdxSeq<N>{});
+        }
+
+
+        T operator [](Size idx) const& noexcept {
+            CHECK_ABORT(idx > N, "Array length exceeded.");
+            return this->_data[idx];
+        }
+
+
+        Option<T> get(Size idx) const& noexcept {
+            return idx <= N ? some_ty_(this->_data[idx], T) : none_(T);
         }
     };
 

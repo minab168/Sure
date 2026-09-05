@@ -5,6 +5,8 @@
 
 namespace sure {
 
+    // TODO: convert to log(n) algorithm
+
     template<typename T, T... Idx>
     struct IntSeq {
         typedef T ValueType;
