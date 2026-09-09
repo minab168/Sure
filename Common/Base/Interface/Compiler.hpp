@@ -20,14 +20,12 @@
 // ---------------------------------- CPP version -----------------------------------
 
 
-#if defined(__cplusplus)
-    #define SURE__IS_CPP_ 1
-#else 
-    #define SURE__IS_CPP_ 0
+#ifdef __cplusplus
+    #define SURE__IS_CPP_
 #endif
 
 
-#if SURE__IS_CPP_
+#ifdef SURE__IS_CPP_
     #define SURE__CPP_VERSION_     __cplusplus
     #define SURE__CPP98_OR_HIGHER_ (CPP_VERSION_ >= 199711L)
     #define SURE__CPP11_OR_HIGHER_ (CPP_VERSION_ >= 201103L)
@@ -65,14 +63,20 @@
 
 
 #if SURE__COMPILER_MSVC_
-    #define ALIGN_(n_)     __declspec(align(n_))
-    #define PACKED_(decl_) _pragma(pack(push,1)) decl_ __pragma(pack(pop))
+    #define ALIGN_(n_)              __declspec(align(n_))
+    #define PACKED_(decl_)          _pragma(pack(push,1)) decl_ __pragma(pack(pop))
+    #define CPP_ALIGNED_NEW
+    #define CPP_SIZED_DEALLOCATION_
 #elif SURE__COMPILER_GCC_ || SURE__COMPILER_CLANG_ || SURE__COMPILER_INTEL_
-    #define ALIGN_(n_)     __attribute__((aligned(n_)))
-    #define PACKED_(decl_) decl_ __attribute__((packed))
+    #define ALIGN_(n_)              __attribute__((aligned(n_)))
+    #define PACKED_(decl_) decl_    __attribute__((packed))
+    #define CPP_ALIGNED_NEW_        __cpp_aligned_new
+    #define CPP_SIZED_DEALLOCATION_ __cpp_sized_deallocation
 #else
-    #define ALIGN_(n_)     
+    #define ALIGN_(n_)
     #define PACKED_(decl_) decl_
+    #define CPP_ALIGNED_NEW
+    #define CPP_SIZED_DEALLOCATION_
 #endif
 
 
@@ -115,9 +119,19 @@
 #if SURE__COMPILER_MSVC_
     #define DEPRECATED(msg_) __declspec(deprecated(msg_))
 #elif SURE__COMPILER_GCC_ || SURE__COMPILER_CLANG_ || SURE__COMPILER_INTEL_
-    #define DEPRECATED(msg_) __attribute__((deprecated(msg_)))
+    #define DEPRECATED_(msg_) __attribute__((deprecated(msg_)))
 #else
-    #define DEPRECATED(msg_)
+    #define DEPRECATED_(msg_)
+#endif
+
+
+#if SURE__COMPILER_MSVC_
+    #pragma warning(error: 4996)
+    #define UNAVAILABLE(msg_) __declspec(unavaliable(msg_))
+#elif SURE__COMPILER_GCC_ || SURE__COMPILER_CLANG_ || SURE__COMPILER_INTEL_
+    #define UNAVAILABLE_(msg_) __attribute__((unavailable(msg_)))
+#else
+    #define UNAVAILABLE_(msg_)
 #endif
 
 

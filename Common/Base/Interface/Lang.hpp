@@ -3,6 +3,7 @@
 
 
 #include "./Platform.hpp"
+#include "./Compiler.hpp"
 
 
 #ifdef SURE__IS_CPP_
@@ -24,7 +25,7 @@
 #define array_len_(array_name_) (sizeof(array_name_) / sizeof(*array_name_))
 
 
-#if SURE__IS_CPP_
+#ifdef SURE__IS_CPP_
     #define CONSTEXPR_ constexpr
 #else 
     #define CONSTEXPR_
@@ -48,17 +49,10 @@
 #endif
 
 
-#if SURE__IS_CPP_
+#ifdef SURE__IS_CPP_
     #define static_cast_(type_, value_) static_cast<type_>(value_)
 #else
     #define static_cast_(type_, value_) (type_) value_
-#endif
-
-
-#if defined(SURE__HAS_RUNTIME_)
-    #define VIRTUAL_IF_RUNTIME_ virtual
-#else
-    #define VIRTUAL_IF_RUNTIME_
 #endif
 
 
