@@ -19,6 +19,9 @@
 #include "Primitives/Inc.hpp"
 
 
+using sure::NoDefaultCopy;
+
+
 #define RESULT_CLASS_TEMPLATE_CONSTRAINT \
   requires Movable<ValueT> and Movable<ErrorT> and \
     Destructible<ValueT> and Destructible<ErrorT> and \

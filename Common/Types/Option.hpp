@@ -8,6 +8,9 @@
 #include "../Utils/Abort.hpp"
 
 
+using sure::NoDefaultCopy;
+
+
 template<typename RefT>
   requires (not Reference<RefT>)
 class OptionRef final /* : NoDefaultCopy */ {

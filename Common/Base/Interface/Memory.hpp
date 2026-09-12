@@ -6,7 +6,7 @@
 #include "../../Types/Primitives/Inc.hpp"
 
 
-namespace sure::base {
+namespace sure {
     #if CPP_ALIGNED_NEW_
         enum class AlignVal: Size {};
     #endif
@@ -30,9 +30,9 @@ namespace sure::base {
 
     NODISCARD_ Void* operator new[](Size);
 
-    NODISCARD_ Void* operator new(Size, const sure::base::NoThrow&) noexcept;
+    NODISCARD_ Void* operator new(Size, const sure::NoThrow&) noexcept;
 
-    NODISCARD_ Void* operator new[](Size, const sure::base::NoThrow&) noexcept;
+    NODISCARD_ Void* operator new[](Size, const sure::NoThrow&) noexcept;
 
 
     Void operator delete(Void*) noexcept;
@@ -40,9 +40,9 @@ namespace sure::base {
     Void operator delete[](Void*) noexcept;
 
 
-    Void operator delete(Void*, const sure::base::NoThrow&) noexcept;
+    Void operator delete(Void*, const sure::NoThrow&) noexcept;
 
-    Void operator delete[](Void*, const sure::base::NoThrow&) noexcept;
+    Void operator delete[](Void*, const sure::NoThrow&) noexcept;
 
 
     #if CPP_SIZED_DEALLOCATION_
@@ -52,28 +52,28 @@ namespace sure::base {
     #endif
 
     #if CPP_ALIGNED_NEW_
-        NODISCARD_ Void* operator new(Size, sure::base::AlignVal);
+        NODISCARD_ Void* operator new(Size, sure::AlignVal);
 
-        NODISCARD_ Void* operator new(Size, sure::base::AlignVal, const sure::base::NoThrow&);
+        NODISCARD_ Void* operator new(Size, sure::AlignVal, const sure::NoThrow&);
 
-        NODISCARD_ Void* operator new[](Size, sure::base::AlignVal);
+        NODISCARD_ Void* operator new[](Size, sure::AlignVal);
 
-        NODISCARD_ Void* operator new[](Size, sure::base::AlignVal, const sure::base::NoThrow&);
+        NODISCARD_ Void* operator new[](Size, sure::AlignVal, const sure::NoThrow&);
 
 
-        Void operator delete(Void*, sure::base::AlignVal) noexcept;
+        Void operator delete(Void*, sure::AlignVal) noexcept;
 
-        Void operator delete(Void*, sure::base::AlignVal, const sure::base::NoThrow&) noexcept;
+        Void operator delete(Void*, sure::AlignVal, const sure::NoThrow&) noexcept;
 
-        Void operator delete[](Void*, sure::base::AlignVal) noexcept;
+        Void operator delete[](Void*, sure::AlignVal) noexcept;
 
-        Void operator delete[](Void*, sure::base::AlignVal, const sure::base::NoThrow&) noexcept;
+        Void operator delete[](Void*, sure::AlignVal, const sure::NoThrow&) noexcept;
 
 
         #if CPP_SIZED_DEALLOCATION_
-            Void operator delete(Void*, Size, sure::base::AlignVal) noexcept;
+            Void operator delete(Void*, Size, sure::AlignVal) noexcept;
 
-            Void operator delete[](Void*, Size, sure::base::AlignVal) noexcept;
+            Void operator delete[](Void*, Size, sure::AlignVal) noexcept;
         #endif
     #endif
 #endif

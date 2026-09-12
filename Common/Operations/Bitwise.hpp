@@ -7,7 +7,7 @@
 #include "../Traits/Primitives.hpp"
 
 
-namespace sure::base {
+namespace sure {
 
     /**
      * Performs a logical left shift on an unsigned integer value.

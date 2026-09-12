@@ -9,14 +9,15 @@
 
 add_library(Types
     INTERFACE
-        Inc.hpp
-    Primitives/Limits.hpp
+    Array.hpp
+    Inc.hpp
     Option.hpp
-    Variant.hpp
-    Result.hpp
     Primitives/Inc.hpp
+    Primitives/Limits.hpp
     Primitives/Size.hpp
+    Result.hpp
     UPtr.hpp
+    Variant.hpp
 )
 
 

@@ -4,7 +4,7 @@
 
 #include "Traits/Primitives.hpp"
 
-namespace sure::base {
+namespace sure {
 
     template<UIntegral T>
     CONSTEXPR_ T align_up(T value, T alignment) noexcept {

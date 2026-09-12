@@ -3,7 +3,7 @@
 #include "../BitField.hpp"
 
 
-using namespace sure::base;
+using namespace sure;
 
 
 TEST(BitFieldMask, CoversWidthsFromOneToFullRegister) {

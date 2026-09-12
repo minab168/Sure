@@ -14,6 +14,9 @@
 #include "../Ownership/Inc.hpp"
 
 
+using sure::ownership::NoDefaultCopy;
+
+
 template<typename PtrT>
 class UPtr final: NoDefaultCopy {
     PtrT _ptr = NULL_PTR;
