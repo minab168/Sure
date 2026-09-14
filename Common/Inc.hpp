@@ -2,7 +2,7 @@
 #define SURE_COMMON_INC_HPP_
 
 
-#include "Base/Inc.hpp"
+#include "Base/Interface/Inc.hpp"
 #include "Operations/Inc.hpp"
 #include "Ownership/Inc.hpp"
 #include "Traits/Inc.hpp"

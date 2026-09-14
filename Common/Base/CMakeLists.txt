@@ -9,8 +9,10 @@
 
 add_library(Base
     INTERFACE
-    Compiler.hpp
-    Inc.hpp
-    Lang.hpp
-    Platform.hpp
+    Interface/Compiler.hpp
+    Interface/Inc.hpp
+    Interface/Lang.hpp
+    Interface/Platform.hpp
+    Interface/Memory.hpp
+    Interface/Runtime.hpp
 )

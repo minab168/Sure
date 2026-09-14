@@ -1,0 +1,12 @@
+#ifndef SURE_COMMON_BASE_RUNTIME_HPP_
+#define SURE_COMMON_BASE_RUNTIME_HPP_
+
+
+#ifdef SURE__NO_RUNTIME_
+    #define VIRTUAL_IF_RUNTIME_
+#else
+    #define VIRTUAL_IF_RUNTIME_ virtual
+#endif
+
+
+#endif // SURE_COMMON_BASE_RUNTIME_HPP_

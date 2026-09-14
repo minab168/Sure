@@ -9,6 +9,7 @@
 
 set(SRC
     Option.cpp
+    Array.cpp
 )
 
 add_executable(TestTypes ${SRC})

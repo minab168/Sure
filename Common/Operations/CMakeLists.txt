@@ -10,8 +10,9 @@
 add_library(Operations
     INTERFACE
     Bitwise.hpp
-    Inc.hpp
     BitField.hpp
+    Alignment.hpp
+    Inc.hpp
 )
 
 add_subdirectory(Tests)

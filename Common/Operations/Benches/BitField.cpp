@@ -5,8 +5,10 @@
 
 #include "../BitField.hpp"
 
+#include "../../../Contribs/googletest/googletest/include/gtest/internal/gtest-internal.h"
 
-namespace sure::base {
+
+namespace sure {
 
     using Clock = std::chrono::steady_clock;
     using BenchmarkFunction = U32 (*)(U32, U32);
@@ -45,7 +47,7 @@ namespace sure::base {
     }
 
 
-    double measure(BenchmarkFunction function) noexcept {
+    testing::internal::Double measure(BenchmarkFunction function) noexcept {
         U32 state = 0x12345678;
 
         for (U32 index = 0; index < 100'000; ++index) {
@@ -83,9 +85,8 @@ namespace sure::base {
     }
 }
 
-
 int main() {
-    using namespace sure::base;
+    using namespace sure;
 
     std::cout << "BitField benchmark (best of " << REPEATS << ")\n";
     print_result("BitField::write", write_field);

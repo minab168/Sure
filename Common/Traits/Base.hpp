@@ -1,6 +1,8 @@
 #pragma once
 
 
+template<typename...> using VoidT = void;
+
 #if SURE__HAS_BUILTIN_(__remove_reference)
     template<typename T> struct RemoveRef { using Type = __remove_reference(T); };
 #else
@@ -16,6 +18,20 @@ template<typename T> struct RemoveConst<T const> { typedef T Type; };
 
 
 template<typename T> struct AddConst { using type = const T; };
+
+
+template<typename T, typename = void> struct AddRvalue { using type = T; };
+
+template<typename T> struct AddRvalue<T, VoidT<T&&>> { using type = T&&; };
+
+template<typename T> using AddRvalueT = typename AddRvalue<T>::type;
+
+
+template<typename T, typename = void> struct AddLvalue { using type = T; };
+
+template<typename T> struct AddLvalue<T, VoidT<T&>> { using type = T&; };
+
+template<typename _Tp> using AddLvalueT = typename AddLvalue<_Tp>::type;
 
 
 template<typename T> struct RemoveConstVolatile { typedef T Type; };
@@ -79,3 +95,34 @@ template<typename T1, typename T2> struct IsSameByRemovingRefConstVolatile : pub
 
 template<typename T, typename U>
 concept SameAs = requires { typename EnableIf<IsSameByRemovingRefConstVolatile<T, U>::value>; };
+
+
+#if SURE__HAS_BUILTIN_(__remove_cv)
+    template<typename T>
+    struct RemoveCV {
+        using type = __remove_cv(T);
+    };
+#else
+    template<typename T>
+    struct RemoveCV {
+        using type = T;
+    };
+
+    template<typename T>
+    struct RemoveCV<const T> {
+        using type = T;
+    };
+
+    template<typename T>
+    struct RemoveCV<volatile T> {
+        using type = T;
+    };
+
+    template<typename T>
+    struct RemoveCV<const volatile T> {
+        using type = T;
+    };
+#endif
+
+template<typename _Tp>
+using RemoveCVT = typename RemoveCV<_Tp>::type;

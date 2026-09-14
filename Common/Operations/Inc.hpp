@@ -2,8 +2,9 @@
 #define SURE_COMMON_OPERATIONS_INC_HPP_
 
 
-#include "Bitwise.hpp"
+#include "Alignment.hpp"
 #include "BitField.hpp"
+#include "Bitwise.hpp"
 
 
 #endif // SURE_COMMON_OPERATIONS_INC_HPP_

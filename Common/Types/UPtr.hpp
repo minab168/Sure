@@ -10,8 +10,11 @@
 
 
 #pragma once
-#include "../Base/Lang.hpp"
+#include "../Base/Interface/Lang.hpp"
 #include "../Ownership/Inc.hpp"
+
+
+using sure::ownership::NoDefaultCopy;
 
 
 template<typename PtrT>

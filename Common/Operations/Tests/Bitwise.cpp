@@ -2,7 +2,7 @@
 
 #include "../Bitwise.hpp"
 
-using namespace sure::base;
+using namespace sure;
 
 TEST(BitwiseMask, SetGetClearAndToggle) {
     constexpr U8 value = 0b00001100;

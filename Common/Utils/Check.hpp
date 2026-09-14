@@ -2,6 +2,14 @@
 
 
 #include "Logging/Inc.hpp"
+#include "Abort.hpp"
+
+
+#define CHECK_ABORT(bool_expr, ...)    do { \
+    if ((bool_expr)) { \
+    ABORT(__VA_ARGS__); \
+} \
+} while(0)
 
 
 #define check_result_(res_expr_, ...)    do { \

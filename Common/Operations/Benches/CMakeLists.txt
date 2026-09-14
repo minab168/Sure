@@ -13,10 +13,12 @@ set(SRC
 
 add_executable(BenchOperations ${SRC})
 
-if (MSVC)
-    target_compile_options(BenchOperations PRIVATE /O2 /Ob3)
-else ()
-    target_compile_options(BenchOperations PRIVATE -O3)
-endif ()
+target_link_libraries(BenchOperations Sure)
+
+#if (MSVC)
+#    target_compile_options(BenchOperations PRIVATE /O2 /Ob3)
+#else ()
+#    target_compile_options(BenchOperations PRIVATE -O3)
+#endif ()
 
 target_compile_definitions(BenchOperations PRIVATE NDEBUG)

@@ -4,8 +4,7 @@
 #include "Bitwise.hpp"
 
 
-namespace sure::base {
-
+namespace sure {
 
     template<UIntegral T, U8 OFFSET, U8 WIDTH>
     class BitField {

@@ -1,13 +1,13 @@
 #ifndef SURE_COMMON_BASE_OPERATIONS_BITWISE_HPP_
 #define SURE_COMMON_BASE_OPERATIONS_BITWISE_HPP_
 
-#include "../Base/Lang.hpp"
+#include "../Base/Interface/Lang.hpp"
 #include "../Types/Primitives/Inc.hpp"
 #include "../Types/Primitives/Size.hpp"
 #include "../Traits/Primitives.hpp"
 
 
-namespace sure::base {
+namespace sure {
 
     /**
      * Performs a logical left shift on an unsigned integer value.
