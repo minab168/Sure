@@ -7,16 +7,9 @@
 # ──────────────────────────────────────────────
 
 
-add_library(Utils
+add_library(Collections
     INTERFACE
-    Abort.hpp
-    Memory.hpp
-    Check.hpp
     Inc.hpp
 )
 
-
-add_subdirectory(Collections)
-add_subdirectory(Location)
-add_subdirectory(Logging)
-add_subdirectory(Tests)
+add_subdirectory(Statics)

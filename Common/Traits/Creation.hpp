@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMMON_TRAITS_CREATION_HPP
+#define COMMON_TRAITS_CREATION_HPP
+
 #include "Base.hpp"
 #include "Helpers.hpp"
 
@@ -17,7 +19,7 @@ concept DefaultConstructible =
 #if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
     __is_nothrow_constructible(T);
 #else
-        DefaultConstructibleThrow<T>
+        DefaultConstructibleThrow<T>;
 #endif
 
 
@@ -35,16 +37,47 @@ concept Constructible =
 #if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
     __is_nothrow_constructible(T, Args...);
 #else
-        ConstructibleThrow<T>
+        ConstructibleThrow<T>;
 #endif
 
 
 template<typename T>
-concept DestructibleThrow = std::is_destructible<>;
+concept TriviallyDefaultConstructible =
+#if SURE__HAS_BUILTIN_(__is_trivially_constructible)
+    __is_trivially_constructible(T);
+#else
+        IsScalar<T>::value;
+#endif
+
+
+template<typename T, typename ...Args>
+concept TriviallyConstructible =
+#if SURE__HAS_BUILTIN_(__is_trivially_constructible)
+    __is_trivially_constructible(T,  Args...);
+#else
+        IsScalar<T>::value;
+#endif
+
+
+
+// template<typename T>
+// concept DestructibleThrow = std::is_destructible<>;
 
 
 template<typename T>
-concept Destructible = IsNothrowDestructible<T>::value;
+concept Destructible = std::is_nothrow_destructible_v<T>;
+
+
+template<typename T, typename ...Args>
+concept TriviallyDestructible =
+#if SURE__HAS_BUILTIN_(__is_trivially_destructible)
+    __is_trivially_destructible(T);
+#elif SURE__HAS_BUILTIN_(__has_trivial_destructor)
+    IsTriviallyDestructible<T>;
+#else
+    IsScalar<T>::value;
+#endif
+
 
 
 template<typename T>
@@ -56,14 +89,32 @@ concept CopyConstructibleThrow =
 #endif
 
 
-
 template<typename T>
 concept CopyConstructible =
 #if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
     __is_nothrow_constructible(T, AddLvalueT<const T>);
 #else
-        CopyConstructibleThrow<T>
+        CopyConstructibleThrow<T>;
 #endif
+
+
+template<typename T>
+concept TriviallyCopyConstructible =
+#if SURE__HAS_BUILTIN_(__is_trivially_constructible)
+    __is_trivially_constructible(T, AddLvalueT<const T&>);
+#else
+        IsScalar<T>::value;
+#endif
+
+
+template<typename T>
+concept TriviallyCopyable =
+#if SURE__HAS_BUILTIN_(__is_trivially_copyable)
+    __is_trivially_copyable(T);
+#else
+        IsScalar<T>::value;
+#endif
+
 
 
 template<typename T>
@@ -75,13 +126,21 @@ concept MoveConstructibleThrow =
 #endif
 
 
+template<typename T>
+concept TriviallyMoveConstructible =
+#if SURE__HAS_BUILTIN_(__is_trivially_constructible)
+    __is_trivially_constructible(T, AddRvalueT<T>);
+#else
+        IsScalar<T>::value;
+#endif
+
 
 template<typename T>
 concept MoveConstructible =
 #if SURE__HAS_BUILTIN_(__is_nothrow_constructible)
     __is_nothrow_constructible(T, AddRvalueT<T>);
 #else
-        MoveConstructibleThrow<T>
+        MoveConstructibleThrow<T>;
 #endif
 
 
@@ -95,13 +154,21 @@ concept CopyAssignableThrow =
 #endif
 
 
-
 template<typename T>
 concept CopyAssignable =
 #if SURE__HAS_BUILTIN_(__is_nothrow_assignable)
     __is_nothrow_assignable(AddLvalueT<T>, AddLvalueT<const T>);
 #else
-        CopyAssignableThrow<T>
+        CopyAssignableThrow<T>;
+#endif
+
+
+template<typename T>
+concept TriviallyCopyAssignable =
+#if SURE__HAS_BUILTIN_(__is_trivially_constructible)
+    __is_trivially_constructible(AddLvalueT<T>, AddLvalueT<const T>);
+#else
+        IsScalar<T>;
 #endif
 
 
@@ -115,13 +182,31 @@ concept MoveAssignableThrow =
 #endif
 
 
-
 template<typename T>
 concept MoveAssignable =
 #if SURE__HAS_BUILTIN_(__is_nothrow_assignable)
     __is_nothrow_assignable(AddLvalueT<T>, AddRvalueT<T>);
 #else
-        MoveAssignableThrow<T>
+        MoveAssignableThrow<T>;
+#endif
+
+
+template<typename T>
+concept TriviallyMoveAssignable =
+#if SURE__HAS_BUILTIN_(__is_trivially_constructible)
+    __is_trivially_constructible(AddLvalueT<T>, AddRvalueT<T>);
+#else
+        IsScalar<T>::value;
+#endif
+
+
+
+template<typename T>
+concept Trivial =
+#if SURE__HAS_BUILTIN_(__is_trivial)
+    __is_trivial(T);
+#else
+        IsScalar<T>::value;
 #endif
 
 
@@ -133,3 +218,6 @@ concept Copyable = CopyConstructibleThrow<T> and CopyAssignableThrow<T> and Dest
 
 template<typename T>
 concept Movable = MoveConstructible<T> and MoveAssignable<T> and Destructible<T>;
+
+
+#endif // COMMON_TRAITS_CREATION_HPP

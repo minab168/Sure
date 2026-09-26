@@ -19,8 +19,8 @@ add_library(Types
     Result.hpp
     UPtr.hpp
     Variant.hpp
-        Iterator.hpp
-        Array.inl
+    Iterator.hpp
+    Array.inl
 )
 
 

@@ -45,10 +45,6 @@ concept Enum = __is_enum(T);
 
 
 template<typename T>
-concept TriviallyCopyable = __is_trivially_copyable(T);
-
-
-template<typename T>
 concept StandardLayout = __is_standard_layout(T);
 
 

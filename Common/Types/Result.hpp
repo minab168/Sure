@@ -25,7 +25,7 @@ using sure::NoDefaultCopy;
 #define RESULT_CLASS_TEMPLATE_CONSTRAINT \
   requires Movable<ValueT> and Movable<ErrorT> and \
     Destructible<ValueT> and Destructible<ErrorT> and \
-NoThrowMovable<ValueT> and NoThrowMovable<ErrorT>
+Movable<ValueT> and Movable<ErrorT>
 
 
 template<typename VRefT, typename ERefT>

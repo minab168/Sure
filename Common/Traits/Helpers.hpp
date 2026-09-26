@@ -2,6 +2,7 @@
 
 
 #include "Base.hpp"
+#include "../Base/Interface/Lang.hpp"
 
 template<typename T, typename...>
 using FirstT = T;
@@ -15,8 +16,17 @@ auto or_fn__(int) -> FirstT<FalseType, EnableIfT<!bool(Bn::value)>...>;
 template<typename... _Bn>
 auto or_fn__(...) -> TrueType;
 
+template<typename... _Bn>
+auto and_fn__(int) -> FirstT<TrueType, EnableIfT<bool(_Bn::value)>...>;
+
+template<typename... _Bn>
+auto and_fn__(...) -> FalseType;
+
 template<typename... Bn>
 struct or__: decltype(or_fn__<Bn...>(0)) { };
+
+template<typename... Bn>
+struct and__: decltype(and_fn__<Bn...>(0)) { };
 
 
 template<typename T>
@@ -67,11 +77,11 @@ struct IsReference<T&>: public TrueType { };
 template<typename T>
 struct IsReference<T&&>: public TrueType { };
 
-template<typename _Tp>
-struct IsArithmetic: public or__<std::is_integral<_Tp>, std::is_floating_point<_Tp>>::type { };
+template<typename T>
+struct IsArithmetic: public or__<std::is_integral<T>, std::is_floating_point<T>>::type { };
 
-template<typename _Tp>
-struct IsEnum: public std::integral_constant<bool, __is_enum(_Tp)> { };
+template<typename T>
+struct IsEnum: public std::integral_constant<bool, __is_enum(T)> { };
 
 template<typename>
 struct IsPointerHelper: public FalseType { };
@@ -91,7 +101,7 @@ struct IsMemberPointerHelper<T C::*>: public TrueType { };
 template<typename T>
 struct IsMemberPointer: public IsMemberPointerHelper<RemoveCVT<T>>::type { };
 
-template<typename _Tp>
+template<typename T>
 struct IsNullPointer: public FalseType { };
 
 template<>
@@ -125,11 +135,30 @@ template<
 struct IsNtDestructibleSafe;
 
 
+template<typename T>
+  struct IsNtDestructibleSafe<T, false, false>
+  // : public __is_nt_destructible_impl<typename
+  //            remove_all_extents<T>::type>::type
+{ }; // TODO: COMPLETE
+
+
+template<
+    typename _Tp,
+    bool = or__<IsVoid<_Tp>,
+        IsArrayUnknownBounds<_Tp>,
+        IsFunction<_Tp>>::value,
+        bool = or__<IsReference<_Tp>, IsScalar<_Tp>>::value
+    >
+struct IsDestructibleSafe;
+
 template<typename _Tp>
-  struct IsNtDestructibleSafe<_Tp, false, false>
-  : public __is_nt_destructible_impl<typename
-             remove_all_extents<_Tp>::type>::type
-{ };
+struct IsDestructibleSafe<_Tp, false, false>: public IsDestructibleSafe<typename std::remove_all_extents<_Tp>::type>::type { };
+
+template<typename _Tp>
+struct IsDestructibleSafe<_Tp, true, false>: public FalseType { };
+
+template<typename _Tp>
+struct IsDestructibleSafe<_Tp, false, true>: public TrueType { };
 
 template<typename T>
 struct IsNtDestructibleSafe<T, true, false>: public FalseType { };
@@ -143,6 +172,7 @@ struct TypeIdentify { using type = T; };
 template <typename T, Size = sizeof(T)>
 constexpr TrueType IsCompleteOrUnbounded(TypeIdentify<T>) { return {}; }
 
+
 template <
     typename TypeIdentity,
     typename NestedType = typename TypeIdentity::type>
@@ -153,13 +183,14 @@ constexpr typename or__<
     IsArrayUnknownBounds<NestedType>
 >::type IsCompleteOrUnbounded(TypeIdentity) { return {}; }
 
-template<typename T>
-struct IsNothrowDestructible: public IsNtDestructibleSafe<T>::type {
-    static_assert(
-        IsCompleteOrUnbounded(TypeIdentify<T>{}),
-        "template argument must be a complete class or an unbounded array"
-    );
-};
+
+// template<typename T>
+// struct IsNothrowDestructible: public IsNtDestructibleSafe<T>::type {
+//     static_assert(
+//         IsCompleteOrUnbounded(TypeIdentify<T>{}),
+//         "template argument must be a complete class or an unbounded array"
+//     );
+// };
 
 
 template<typename T>
@@ -169,6 +200,23 @@ struct IsDestructible: public std::__is_destructible_safe<T>::type {
         "template argument must be a complete class or an unbounded array"
     );
 };
+
+
+template <typename T>
+inline constexpr bool IsTriviallyDestructible = false;
+
+template <typename T>
+  requires (!IsReference<T>::value) && requires (T& __t) { __t.~T(); }
+inline constexpr bool IsTriviallyDestructible<T> = __has_trivial_destructor(T);
+
+template <typename T>
+inline constexpr bool IsTriviallyDestructible<T&> = true;
+
+template <typename T>
+inline constexpr bool IsTriviallyDestructible<T&&> = true;
+
+template <typename T, size_t NUM>
+inline constexpr bool IsTriviallyDestructible<T[NUM]> = IsTriviallyDestructible<T>;
 
 
 #define enable_if_(CondT_, T_) (EnableIf<CondT_, T_>::type)

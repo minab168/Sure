@@ -7,16 +7,11 @@
 # ──────────────────────────────────────────────
 
 
-add_library(Utils
+add_library(StaticCollections
     INTERFACE
-    Abort.hpp
-    Memory.hpp
-    Check.hpp
     Inc.hpp
+    StaticVec.hpp
 )
 
 
-add_subdirectory(Collections)
-add_subdirectory(Location)
-add_subdirectory(Logging)
 add_subdirectory(Tests)

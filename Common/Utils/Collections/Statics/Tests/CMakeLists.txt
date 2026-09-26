@@ -7,16 +7,16 @@
 # ──────────────────────────────────────────────
 
 
-add_library(Utils
-    INTERFACE
-    Abort.hpp
-    Memory.hpp
-    Check.hpp
-    Inc.hpp
+set(SRC
+    StaticVec.cpp
+)
+
+add_executable(TestStaticCollections ${SRC})
+
+target_link_libraries(TestStaticCollections
+    gtest
+    gtest_main
 )
 
 
-add_subdirectory(Collections)
-add_subdirectory(Location)
-add_subdirectory(Logging)
-add_subdirectory(Tests)
+add_test(NAME StaticCollectionsTests COMMAND TestStaticCollections)

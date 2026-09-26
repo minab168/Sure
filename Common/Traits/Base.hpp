@@ -20,18 +20,24 @@ template<typename T> struct RemoveConst<T const> { typedef T Type; };
 template<typename T> struct AddConst { using type = const T; };
 
 
-template<typename T, typename = void> struct AddRvalue { using type = T; };
+#if SURE__HAS_BUILTIN_(__add_rvalue_reference)
+    template<typename T>
+    using AddRvalueT = __add_rvalue_reference(T);
+#else
+    template<typename T, typename = void> struct AddRvalue { using type = T; };
+    template<typename T> struct AddRvalue<T, VoidT<T&&>> { using type = T&&; };
+    template<typename T> using AddRvalueT = typename AddRvalue<T>::type;
+#endif
 
-template<typename T> struct AddRvalue<T, VoidT<T&&>> { using type = T&&; };
 
-template<typename T> using AddRvalueT = typename AddRvalue<T>::type;
-
-
-template<typename T, typename = void> struct AddLvalue { using type = T; };
-
-template<typename T> struct AddLvalue<T, VoidT<T&>> { using type = T&; };
-
-template<typename _Tp> using AddLvalueT = typename AddLvalue<_Tp>::type;
+#if SURE__HAS_BUILTIN_(__add_lvalue_reference)
+    template<typename T>
+    using AddLvalueT = __add_lvalue_reference(T);
+#else
+    template<typename T, typename = void> struct AddLvalue { using type = T; };
+    template<typename T> struct AddLvalue<T, VoidT<T&>> { using type = T&; };
+    template<typename _Tp> using AddLvalueT = typename AddLvalue<_Tp>::type;
+#endif
 
 
 template<typename T> struct RemoveConstVolatile { typedef T Type; };
