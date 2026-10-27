@@ -5,7 +5,7 @@
 #include "Abort.hpp"
 
 
-#define CHECK_ABORT(bool_expr, ...)    do { \
+#define ABORT_IF_FALSE_(bool_expr, ...)    do { \
     if ((bool_expr)) { \
     ABORT(__VA_ARGS__); \
 } \

@@ -10,6 +10,7 @@
 add_library(Utils
     INTERFACE
     Abort.hpp
+    Assert.hpp
     Memory.hpp
     Check.hpp
     Inc.hpp

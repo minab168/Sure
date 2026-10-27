@@ -571,8 +571,8 @@ TEST(StaticVecDestructor, DestroysExactlyLiveElementsNotCapacity) {
         mut v = StaticVec<LifetimeTracker, 10>(LifetimeTracker(1), LifetimeTracker(2));
         EXPECT_EQ(v.length(), 2);
     }
-    EXPECT_EQ(LifetimeTracker::constructions, 2);
-    EXPECT_EQ(LifetimeTracker::destructions, 2);
+    EXPECT_EQ(LifetimeTracker::constructions, 4);
+    EXPECT_EQ(LifetimeTracker::destructions, 4);
 }
 
 

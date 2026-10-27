@@ -28,13 +28,13 @@ namespace sure {
 
 
         T& operator*() noexcept {
-            CHECK_ABORT(this->_ptr == NULL_PTR, "Null pointer!");
+            ABORT_IF_FALSE_(this->_ptr != NULL_PTR, "Null pointer!");
             return *this->_ptr;
         }
 
 
         const T& operator*() const noexcept {
-            CHECK_ABORT(this->_ptr == NULL_PTR, "Null pointer!");
+            ABORT_IF_FALSE_(this->_ptr != NULL_PTR, "Null pointer!");
             return *this->_ptr;
         }
 

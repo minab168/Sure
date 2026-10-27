@@ -10,6 +10,7 @@
 add_library(StaticCollections
     INTERFACE
     Inc.hpp
+    RingBuf.hpp
     StaticVec.hpp
 )
 

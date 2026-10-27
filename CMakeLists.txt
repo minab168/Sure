@@ -37,6 +37,7 @@ endif()
 
 
 add_subdirectory(Contribs/googletest)
+add_subdirectory(Hardware)
 add_subdirectory(Common)
 
 

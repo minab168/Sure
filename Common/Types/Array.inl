@@ -39,14 +39,14 @@ namespace sure {
 
     template<typename T, Size N>
     T& Array<T, N>::operator[](Size idx) & noexcept {
-        CHECK_ABORT(idx >= N, "Array length exceeded.");
+        ABORT_IF_FALSE_(idx < N, "Array length exceeded.");
         return this->_data[idx];
     }
 
 
     template<typename T, Size N>
     const T& Array<T, N>::operator[](Size idx) const& noexcept {
-        CHECK_ABORT(idx >= N, "Array length exceeded.");
+        ABORT_IF_FALSE_(idx < N, "Array length exceeded.");
         return this->_data[idx];
     }
 
@@ -55,7 +55,7 @@ namespace sure {
     T Array<T, N>::at_clone(Size idx) const noexcept
         requires Clonable<T> or Copyable<T>
     {
-        CHECK_ABORT(idx >= N, "Array length exceeded.");
+        ABORT_IF_FALSE_(idx < N, "Array length exceeded.");
         if constexpr (Clonable<T>) {
             return this->_data[idx].clone();
         }

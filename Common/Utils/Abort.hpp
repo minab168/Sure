@@ -7,9 +7,9 @@
 #include "Location/Inc.hpp"
 
 
-#define ABORT(fmt, ...) do { \
-        log_fat_("Process aborted at %s:%d in %s()", FILE_, LINE_, FUNCTION_); \
+#define SURE_ABORT(fmt, ...) do { \
         if (fmt) log_err_(fmt, ##__VA_ARGS__); \
+        log_fat_("Process aborted at %s:%d in %s()", FILE_, LINE_, FUNCTION_); \
         ::abort(); \
     } while(0)
 

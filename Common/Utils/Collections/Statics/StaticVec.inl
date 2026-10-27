@@ -1,5 +1,5 @@
-#ifndef SURE_COMMON_UTILS_COLLECTIONS_STATICS_STATIC_VEC_HPP
-#define SURE_COMMON_UTILS_COLLECTIONS_STATICS_STATIC_VEC_HPP
+#ifndef UTILS_COLLECTIONS_STATICS_STATIC_VEC_INL
+#define UTILS_COLLECTIONS_STATICS_STATIC_VEC_INL
 
 #ifndef UTILS_COLLECTIONS_STATICS_STATIC_VEC_HPP
 #error "Do not include this file directly"
@@ -71,7 +71,6 @@ namespace sure::collections {
 
         if constexpr (TriviallyMoveConstructible<T>) {
             mem_copy(this->_storage, other._storage, other._length * sizeof(T));
-            this->_length = other._length;
         }
         else {
             for (mut i = 0; i < other._length; i++) {
@@ -104,14 +103,14 @@ namespace sure::collections {
 
     template<typename T, Size CAP>
     T& StaticVec<T, CAP>::operator[](Size idx) & noexcept {
-        CHECK_ABORT(idx >= this->_length, "StaticVec index out of range.");
+        ABORT_IF_FALSE_(idx < this->_length, "StaticVec index out of range.");
         return *this->_slot_ptr(idx);
     }
 
 
     template<typename T, Size CAP>
     const T& StaticVec<T, CAP>::operator[](Size idx) const& noexcept {
-        CHECK_ABORT(idx >= this->_length, "StaticVec index out of range.");
+        ABORT_IF_FALSE_(idx < this->_length, "StaticVec index out of range.");
         return *this->_slot_ptr(idx);
     }
 
@@ -120,7 +119,7 @@ namespace sure::collections {
     T StaticVec<T, CAP>::at_clone(Size idx) & noexcept
         requires Clonable<T> or Copyable<T>
     {
-        CHECK_ABORT(idx >= this->_length, "StaticVec index out of range.");
+        ABORT_IF_FALSE_(idx < this->_length, "StaticVec index out of range.");
         if constexpr (Clonable<T>) {
             return this->_slot_ptr(idx)->clone();
         }
@@ -157,14 +156,14 @@ namespace sure::collections {
 
     template<typename T, Size CAP>
     Void StaticVec<T, CAP>::push(const T& value) & noexcept requires (Clonable<T> or Copyable<T>) {
-        CHECK_ABORT(this->_length >= CAP, "Cannot push: StaticVec is at full capacity.");
+        ABORT_IF_FALSE_(this->_length < CAP, "Cannot push: StaticVec is at full capacity.");
         this->_placement_new(value, this->_length);
     }
 
 
     template<typename T, Size CAP>
     Void StaticVec<T, CAP>::push(T&& value) & noexcept requires MoveConstructible<T> {
-        CHECK_ABORT(this->_length >= CAP, "Cannot push: StaticVec is at full capacity.");
+        ABORT_IF_FALSE_(this->_length < CAP, "Cannot push: StaticVec is at full capacity.");
         this->_placement_new(do_move(value), this->_length);
     }
 
@@ -187,7 +186,7 @@ namespace sure::collections {
 
     template<typename T, Size CAP>
     NODISCARD_ T StaticVec<T, CAP>::pop() & noexcept requires MoveConstructible<T> {
-        CHECK_ABORT(this->_length == 0, "Cannot pop: StaticVec is empty.");
+        ABORT_IF_FALSE_(this->_length != 0, "Cannot pop: StaticVec is empty.");
 
         this->_length -= 1;
         let slot = this->_slot_ptr(this->_length);
@@ -263,4 +262,4 @@ namespace sure::collections {
 }
 
 
-#endif // SURE_COMMON_UTILS_COLLECTIONS_STATICS_STATIC_VEC_HPP
+#endif // UTILS_COLLECTIONS_STATICS_STATIC_VEC_INL

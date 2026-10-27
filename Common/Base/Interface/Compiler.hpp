@@ -147,9 +147,9 @@
 #if SURE__COMPILER_MSVC_
     #define MAYBE_UNUSED
 #elif SURE__COMPILER_GCC_ || SURE__COMPILER_CLANG_
-    #define MAYBE_UNUSED __attribute__((unused))
+    #define MAYBE_UNUSED_ __attribute__((unused))
 #else
-    #define MAYBE_UNUSED
+    #define MAYBE_UNUSED_
 #endif
 
 
@@ -178,6 +178,5 @@
         #define SURE__HAS_BUILTIN_(x) 0
     #endif
 #endif
-
 
 #endif // SURE_COMMON_BASE_COMPILER_HPP_
