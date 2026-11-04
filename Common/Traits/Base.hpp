@@ -66,11 +66,6 @@ template<typename> struct IsRvalueRef: public FalseType { };
 template<typename T> struct IsRvalueRef<T&&>: public TrueType { };
 
 
-template<typename, typename> struct IsSame: public FalseType {};
-
-template<typename T> struct IsSame<T, T>: public TrueType  {};
-
-
 template<template<typename...> class, template<typename...> class> struct IsSameTemplate: public FalseType {};
 template<template<typename...> class T> struct IsSameTemplate<T, T>: public TrueType  {};
 
@@ -89,6 +84,22 @@ struct IntegralConstant {
 
 template<bool, typename T = void> struct EnableIf { };
 
+template<typename T> struct EnableIf<true, T> { using type = T; };
+
+
+
+#if SURE__HAS_BUILTIN_(__is_same)
+    template<typename T, typename U>
+    struct IsSame: public BoolConstant<__is_same(T, U)> { };
+#else
+    template<typename T, typename U>
+      struct IsSame: public FalseType { };
+
+    template<typename T>
+    struct IsSame<T, T>: public TrueType { };
+#endif
+
+
 template<typename Base, typename Derived> struct IsBaseOf: public IntegralConstant<bool, __is_base_of(Base, Derived)> { };
 
 
@@ -96,11 +107,6 @@ template<typename T1, typename T2> struct IsSameByRemovingRefConstVolatile : pub
     typename RemoveRef<typename RemoveConstVolatile<T1>::Type>::Type,
     typename RemoveRef<typename RemoveConstVolatile<T2>::Type>::Type
 > {};
-
-
-
-template<typename T, typename U>
-concept SameAs = requires { typename EnableIf<IsSameByRemovingRefConstVolatile<T, U>::value>; };
 
 
 #if SURE__HAS_BUILTIN_(__remove_cv)
@@ -132,3 +138,17 @@ concept SameAs = requires { typename EnableIf<IsSameByRemovingRefConstVolatile<T
 
 template<typename _Tp>
 using RemoveCVT = typename RemoveCV<_Tp>::type;
+
+
+#if SURE__HAS_BUILTIN_(__is_same)
+template <typename T, typename U>
+inline constexpr bool IsSameV = __is_same(T, U);
+#else
+template <typename T, typename U>
+inline constexpr bool IsSameV = false;
+template <typename T>
+inline constexpr bool IsSameV<T, T> = true;
+#endif
+
+template<typename T, typename U>
+concept SameAs = IsSameV<T, U> && IsSameV<U, T>;

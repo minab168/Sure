@@ -6,7 +6,7 @@
 #include "./Logging/Inc.hpp"
 #include "./Abort.hpp"
 
-#define SURE_STATIC_ASSERT(cond, msg) static_assert(cond, msg)
+#define SURE_STATIC_ASSERT(cond, msg, ...) static_assert(cond, msg, ##__VA_ARGS__)
 
 #define SURE_IS_TRUE(cond)  (!!cond)
 #define SURE_IS_FALSE(cond) (!cond)

@@ -7,7 +7,7 @@
 
 #define ABORT_IF_FALSE_(bool_expr, ...)    do { \
     if ((bool_expr)) { \
-    ABORT(__VA_ARGS__); \
+    SURE_ABORT(__VA_ARGS__); \
 } \
 } while(0)
 

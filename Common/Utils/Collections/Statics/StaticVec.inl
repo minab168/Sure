@@ -245,7 +245,7 @@ namespace sure::collections {
                         other._slot_ptr(i)->~T();
                     }
                     else {
-                        ABORT("StaticVec move-assignment cannot grow: T is move-assignable but not move-constructible, so no new slots can be constructed.");
+                        SURE_ABORT("StaticVec move-assignment cannot grow: T is move-assignable but not move-constructible, so no new slots can be constructed.");
                     }
                 }
                 else {

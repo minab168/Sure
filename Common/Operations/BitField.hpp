@@ -12,6 +12,8 @@ namespace sure {
         static_assert(OFFSET + WIDTH <= sizeof(T) * CHAR_SIZE_, "BitField range exceeds the size of the underlying type.");
 
       public:
+        using Type = T;
+
         static CONSTEXPR_ T mask() noexcept {
             if constexpr (sizeof(T) * CHAR_SIZE_ == WIDTH) {
                 return ~static_cast<T>(0);
