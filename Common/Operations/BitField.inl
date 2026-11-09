@@ -20,21 +20,21 @@ namespace sure {
 
     template<typename T>
     FORCE_INLINE_ CONSTEXPR_ T bitfield_write(T reg, T value, U8 width, U8 offset) noexcept {
-        T reg_cleared = bit_clear_mask<T>(reg, mask<T>(width) << offset);
-        T value_shifted = bit_get_mask<T>(value, mask<T>(width)) << offset;
+        T reg_cleared = bit_clear_mask<T>(reg, bitfield_mask<T>(width) << offset);
+        T value_shifted = bit_get_mask<T>(value, bitfield_mask<T>(width)) << offset;
         return bit_set_mask<T>(reg_cleared, value_shifted);
     }
 
 
     template<typename T>
     FORCE_INLINE_ CONSTEXPR_ T bitfield_extract(T reg, U8 width, U8 offset) noexcept {
-        return bit_get_mask<T>(reg >> offset, mask<T>(width));
+        return bit_get_mask<T>(reg >> offset, bitfield_mask<T>(width));
     }
 
 
     template<typename T>
     FORCE_INLINE_ CONSTEXPR_ Bool bitfield_is_valid(T value, U8 width) noexcept {
-        return (value | mask<T>(width)) == mask<T>(width);
+        return (value | bitfield_mask<T>(width)) == bitfield_mask<T>(width);
     }
 
 
