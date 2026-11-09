@@ -2,6 +2,7 @@
 #define SURE_COMMON_UTILS_LOGGING_LOG_HPP_
 
 
+#include <stdio.h>
 #include <ctime>
 #include "../../Base/Interface/Lang.hpp"
 #include "../../Types/Primitives/Inc.hpp"
