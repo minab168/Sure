@@ -8,21 +8,25 @@ namespace sure {
 
     template<UIntegral T, U8 OFFSET, U8 WIDTH>
     class CE_BitField {
-        static_assert(bitfield_fits<T>(WIDTH, OFFSET), "BitField range is invalid for the underlying type.");
+        static_assert(bitfield_fits<T>(OFFSET, WIDTH), "BitField range is invalid for the underlying type.");
 
       public:
         using Type = T;
 
         static CONSTEXPR_ T mask() noexcept {
-            return bitfield_mask<T>(WIDTH);
+            return bitfield_mask_no_offset<T>(WIDTH) << OFFSET;
+        }
+
+        static CONSTEXPR_ T mask_no_offset() noexcept {
+            return bitfield_mask_no_offset<T>(WIDTH);
         }
 
         static CONSTEXPR_ T write(T reg, T value) noexcept {
-            return bitfield_write(reg, value, WIDTH, OFFSET);
+            return bitfield_write(reg, value, OFFSET, WIDTH);
         }
 
         static CONSTEXPR_ T extract(T reg) noexcept {
-            return bitfield_extract(reg, WIDTH, OFFSET);
+            return bitfield_extract(reg, OFFSET, WIDTH);
         }
 
         static CONSTEXPR_ Bool is_valid(T value) noexcept {

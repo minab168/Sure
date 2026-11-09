@@ -24,15 +24,19 @@ namespace sure {
         }
 
         NODISCARD_ CONSTEXPR_ T mask() const noexcept {
-            return bitfield_mask<T>(this->_width);
+            return bitfield_mask_no_offset<T>(this->_width) << this->_offset;
+        }
+
+        NODISCARD_ CONSTEXPR_ T mask_no_offset() const noexcept {
+            return bitfield_mask_no_offset<T>(this->_width);
         }
 
         NODISCARD_ CONSTEXPR_ T write(T reg, T value) const noexcept {
-            return bitfield_write(reg, value, this->_width, this->_offset);
+            return bitfield_write(reg, value, this->_offset, this->_width);
         }
 
         NODISCARD_ CONSTEXPR_ T extract(T reg) const noexcept {
-            return bitfield_extract(reg, this->_width, this->_offset);
+            return bitfield_extract(reg, this->_offset, this->_width);
         }
 
         NODISCARD_ CONSTEXPR_ Bool is_valid(T value) const noexcept {

@@ -15,7 +15,7 @@ namespace sure::hw {
     };
 
 
-    template<Size ADDR, UIntegral T = UWord, MMIOAccessMode ACCESS = MMIOAccessMode::ReadWrite>
+    template<UWord ADDR, UIntegral T = UWord, MMIOAccessMode ACCESS = MMIOAccessMode::ReadWrite>
     class MMIO {
         static_assert(
             ADDR % sizeof(T) == 0,
@@ -26,20 +26,20 @@ namespace sure::hw {
 
       public:
 
-        static T read() noexcept {
+        FORCE_INLINE_ static T read() noexcept {
             SURE_STATIC_ASSERT(ACCESS != MMIOAccessMode::WriteOnly, "MMIO: Cannot read a write-only register.");
             return *reinterpret_cast<V_PtrT>(ADDR);
         }
 
 
-        static Void write(T value) noexcept {
+        FORCE_INLINE_ static Void write(T value) noexcept {
             SURE_STATIC_ASSERT(ACCESS != MMIOAccessMode::ReadOnly, "MMIO: Cannot write a read-only register.");
             *reinterpret_cast<V_PtrT>(ADDR) = value;
         }
 
 
         template<typename FIELD>
-        static T read_field(const FIELD& field) noexcept {
+        FORCE_INLINE_ static T read_field(const FIELD& field) noexcept {
             SURE_STATIC_ASSERT(
                 (SameAs<T, typename FIELD::Type>),
                 "MMIO: the BitField's underlying type must be identical to the register type T."
@@ -51,7 +51,7 @@ namespace sure::hw {
 
 
         template<typename FIELD>
-        static Void set_mask(const FIELD& field) noexcept {
+        FORCE_INLINE_ static Void set_mask(const FIELD& field) noexcept {
             SURE_STATIC_ASSERT(
                 (SameAs<T, typename FIELD::Type>),
                 "MMIO: the BitField's underlying type must be identical to the register type T."
@@ -75,7 +75,7 @@ namespace sure::hw {
          * Values that do not fit in the field are truncated silently.
          */
         template<typename FIELD>
-        static Void modify_field(const FIELD& field, T value) noexcept {
+        FORCE_INLINE_ static Void modify_field(const FIELD& field, T value) noexcept {
             SURE_STATIC_ASSERT(
                 (SameAs<T, typename FIELD::Type>),
                 "MMIO: the BitField's underlying type must be identical to the register type T."
@@ -92,7 +92,7 @@ namespace sure::hw {
          * @ref modify_field
          */
         template<typename FIELD>
-        static Void set_bits(const FIELD& field) noexcept {
+        FORCE_INLINE_ static Void set_bits(const FIELD& field) noexcept {
             MMIO::modify_field<FIELD>(field, field.mask());
         }
 
@@ -101,7 +101,7 @@ namespace sure::hw {
          * @ref modify_field
          */
         template<typename FIELD>
-        static Void clear_bits(const FIELD& field) noexcept {
+        FORCE_INLINE_ static Void clear_bits(const FIELD& field) noexcept {
             MMIO::modify_field<FIELD>(field, 0);
         }
     };
