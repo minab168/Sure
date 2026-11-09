@@ -23,19 +23,19 @@ namespace sure {
             SURE_ABORT_ON_FALSE(bitfield_fits<T>(width, offset), "BitField range is invalid for the underlying type.");
         }
 
-        CONSTEXPR_ T mask() noexcept {
+        CONSTEXPR_ T mask() const noexcept {
             return bitfield_mask<T>(this->_width);
         }
 
-        CONSTEXPR_ T write(T reg, T value) noexcept {
+        CONSTEXPR_ T write(T reg, T value) const noexcept {
             return bitfield_write(reg, value, this->_width, this->_offset);
         }
 
-        CONSTEXPR_ T extract(T reg) noexcept {
+        CONSTEXPR_ T extract(T reg) const noexcept {
             return bitfield_extract(reg, this->_width, this->_offset);
         }
 
-        CONSTEXPR_ Bool is_valid(T value) noexcept {
+        CONSTEXPR_ Bool is_valid(T value) const noexcept {
             return bitfield_is_valid(value, this->_width);
         }
     };
