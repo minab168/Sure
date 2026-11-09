@@ -50,6 +50,17 @@ namespace sure::hw {
         }
 
 
+        template<typename FIELD>
+        static Void set_mask(const FIELD& field) noexcept {
+            SURE_STATIC_ASSERT(
+                (SameAs<T, typename FIELD::Type>),
+                "MMIO: the BitField's underlying type must be identical to the register type T."
+            );
+
+            MMIO::write(field.mask());
+        }
+
+
         /**
          * Updates a single field and leaves all other bits of the register unchanged.
          *
