@@ -93,7 +93,7 @@ namespace sure::hw {
          */
         template<typename FIELD>
         FORCE_INLINE_ static Void set_bits(const FIELD& field) noexcept {
-            MMIO::modify_field<FIELD>(field, field.mask_no_shift());
+            MMIO::modify_field<FIELD>(field, field.mask_no_offset());
         }
 
 
