@@ -20,4 +20,7 @@ add_library(Utils
 add_subdirectory(Collections)
 add_subdirectory(Location)
 add_subdirectory(Logging)
-add_subdirectory(Tests)
+
+if(SURE_BUILD_TESTS)
+    add_subdirectory(Tests)
+endif()

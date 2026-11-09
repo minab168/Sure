@@ -9,6 +9,7 @@ project(Sure
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(SURE_BUILD_TESTS "Build Sure tests and benchmarks" OFF)
 option(NO_RUNTIME "Disable Runtime and VTable" ON)
 
 if (NO_RUNTIME)
@@ -37,14 +38,15 @@ endif()
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Build/bin)
 
 
-add_subdirectory(Contribs/googletest)
 add_subdirectory(Hardware)
 add_subdirectory(Common)
 
+if(SURE_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(Contribs/googletest)
+endif()
 
 target_include_directories(Sure INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
     $<INSTALL_INTERFACE:include>
 )
-
-enable_testing()

@@ -24,4 +24,6 @@ add_library(Types
 )
 
 
-add_subdirectory(Tests)
+if(SURE_BUILD_TESTS)
+    add_subdirectory(Tests)
+endif()

@@ -15,6 +15,8 @@ add_library(Operations
     Inc.hpp
 )
 
-add_subdirectory(Tests)
 
-add_subdirectory(Benches)
+if(SURE_BUILD_TESTS)
+    add_subdirectory(Tests)
+    add_subdirectory(Benches)
+endif()
