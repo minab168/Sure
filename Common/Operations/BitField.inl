@@ -10,12 +10,11 @@ namespace sure {
 
     template<typename T>
     FORCE_INLINE_ CONSTEXPR_ T bitfield_mask(U8 width) noexcept {
-        if constexpr (sizeof(T) * CHAR_SIZE_ == width) {
+        if (sizeof(T) * CHAR_SIZE_ == width) {
             return ~static_cast<T>(0);
         }
-        else {
-            return (static_cast<T>(1) << width) - 1;
-        }
+
+        return (static_cast<T>(1) << width) - 1;
     }
 
 
