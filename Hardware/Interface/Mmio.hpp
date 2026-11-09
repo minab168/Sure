@@ -32,21 +32,21 @@ namespace sure::hw {
         }
 
 
+        static Void write(T value) noexcept {
+            SURE_STATIC_ASSERT(ACCESS != MMIOAccessMode::ReadOnly, "MMIO: Cannot write a read-only register.");
+            *reinterpret_cast<V_PtrT>(ADDR) = value;
+        }
+
+
         template<typename FIELD>
-        static T read_field() noexcept {
+        static T read_field(const FIELD& field) noexcept {
             SURE_STATIC_ASSERT(
                 (SameAs<T, typename FIELD::Type>),
                 "MMIO: the BitField's underlying type must be identical to the register type T."
             );
 
             let reg = MMIO::read();
-            return FIELD::extract(reg);
-        }
-
-
-        static Void write(T value) noexcept {
-            SURE_STATIC_ASSERT(ACCESS != MMIOAccessMode::ReadOnly, "MMIO: Cannot write a read-only register.");
-            *reinterpret_cast<V_PtrT>(ADDR) = value;
+            return field.extract(reg);
         }
 
 
@@ -64,7 +64,7 @@ namespace sure::hw {
          * Values that do not fit in the field are truncated silently.
          */
         template<typename FIELD>
-        static Void modify_field(T value) noexcept {
+        static Void modify_field(const FIELD& field, T value) noexcept {
             SURE_STATIC_ASSERT(
                 (SameAs<T, typename FIELD::Type>),
                 "MMIO: the BitField's underlying type must be identical to the register type T."
@@ -72,7 +72,7 @@ namespace sure::hw {
 
 
             let reg = MMIO::read();
-            let new_val = FIELD::write(reg, value);
+            let new_val = field.write(reg, value);
             MMIO::write(new_val);
         }
 
@@ -81,8 +81,8 @@ namespace sure::hw {
          * @ref modify_field
          */
         template<typename FIELD>
-        static Void set_bits() noexcept {
-            MMIO::modify_field<FIELD>(FIELD::mask());
+        static Void set_bits(const FIELD& field) noexcept {
+            MMIO::modify_field<FIELD>(field, field.mask());
         }
 
 
@@ -90,8 +90,8 @@ namespace sure::hw {
          * @ref modify_field
          */
         template<typename FIELD>
-        static Void clear_bits() noexcept {
-            MMIO::modify_field<FIELD>(0);
+        static Void clear_bits(const FIELD& field) noexcept {
+            MMIO::modify_field<FIELD>(field, 0);
         }
     };
 }
