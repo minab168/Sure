@@ -20,7 +20,7 @@ namespace sure {
             _width{width},
             _offset{offset}
         {
-            // SURE_ABORT_ON_FALSE(bitfield_fits<T>(width, offset), "BitField range is invalid for the underlying type.");
+            SURE_ABORT_ON_FALSE(bitfield_fits<T>(width, offset), "BitField range is invalid for the underlying type.");
         }
 
         NODISCARD_ CONSTEXPR_ T mask() const noexcept {
