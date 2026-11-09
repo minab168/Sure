@@ -24,6 +24,7 @@ endif ()
 
 
 add_library(Sure INTERFACE)
+add_library(Sure::Sure ALIAS Sure)
 
 
 if(NOT CMAKE_GENERATOR STREQUAL "Ninja")

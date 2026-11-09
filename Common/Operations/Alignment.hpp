@@ -2,7 +2,8 @@
 #define SURE_COMMON_BASE_OPERATIONS_ALIGNMENT_HPP_
 
 
-#include "Traits/Primitives.hpp"
+#include "../Traits/Primitives.hpp"
+
 
 namespace sure {
 

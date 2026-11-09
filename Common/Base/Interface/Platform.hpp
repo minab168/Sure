@@ -83,45 +83,73 @@
 // ----------------------------- Architecture detection -----------------------------
 
 
-#if defined(__x86_64__) || defined(_M_X64)
+#if defined(__x86_64__) || defined(__amd64__) || defined(_M_X64) || defined(_M_AMD64)
     #define SURE__ARCH_X64_ 1
 #else
     #define SURE__ARCH_X64_ 0
 #endif
 
 
-#if defined(__i386__) || defined(_M_IX86)
+#if (defined(__i386__) || defined(__i686__) || defined(_M_IX86)) && !SURE__ARCH_X64_
     #define SURE__ARCH_X86_ 1
 #else
     #define SURE__ARCH_X86_ 0
 #endif
 
 
-#if defined(__aarch64__) || defined(_M_ARM64)
+#if defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
     #define SURE__ARCH_ARM64_ 1
 #else
     #define SURE__ARCH_ARM64_ 0
 #endif
 
 
-#if defined(__arm__) || defined(_M_ARM)
+#if (defined(__arm__) || defined(_M_ARM)) && !SURE__ARCH_ARM64_
     #define SURE__ARCH_ARM32_ 1
 #else
     #define SURE__ARCH_ARM32_ 0
 #endif
 
 
-#if defined(__powerpc64__) || defined(__ppc64__)
+#if defined(__powerpc64__) || defined(__ppc64__) || defined(__PPC64__) || defined(_ARCH_PPC64)
     #define SURE__ARCH_PPC64_ 1
 #else
     #define SURE__ARCH_PPC64_ 0
 #endif
 
 
-#if defined(__powerpc__) || defined(__ppc__)
+#if (defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) || defined(_ARCH_PPC)) && !SURE__ARCH_PPC64_
     #define SURE__ARCH_PPC32_ 1
 #else
     #define SURE__ARCH_PPC32_ 0
+#endif
+
+
+#if defined(__xtensa__) || defined(__XTENSA__)
+    #define SURE__ARCH_XTENSA_ 1
+#else
+    #define SURE__ARCH_XTENSA_ 0
+#endif
+
+
+#if defined(__riscv) || defined(__riscv__)
+    #define SURE__ARCH_RISCV_ 1
+#else
+    #define SURE__ARCH_RISCV_ 0
+#endif
+
+
+#if defined(__AVR__)
+    #define SURE__ARCH_AVR_ 1
+#else
+    #define SURE__ARCH_AVR_ 0
+#endif
+
+
+#if defined(__MSP430__)
+    #define SURE__ARCH_MSP430_ 1
+#else
+    #define SURE__ARCH_MSP430_ 0
 #endif
 
 
@@ -139,20 +167,6 @@
 #endif
 
 
-#if defined(__xtensa__)
-    #define SURE__ARCH_XTENSA_ 1
-#else
-    #define SURE__ARCH_XTENSA_ 0
-#endif
-
-
-#if defined(__riscv) || defined(__riscv__)
-    #define SURE__ARCH_RISCV_ 1
-#else
-    #define SURE__ARCH_RISCV_ 0
-#endif
-
-
 #if !SURE__ARCH_X86_ \
     && !SURE__ARCH_X64_ \
     && !SURE__ARCH_ARM64_ \
@@ -160,8 +174,62 @@
     && !SURE__ARCH_PPC64_ \
     && !SURE__ARCH_PPC32_ \
     && !SURE__ARCH_XTENSA_ \
-    && !SURE__ARCH_RISCV_
+    && !SURE__ARCH_RISCV_ \
+    && !SURE__ARCH_AVR_ \
+    && !SURE__ARCH_MSP430_
     #error "Unsupported architecture"
+#endif
+
+
+
+// ---------------------------- Native word width (bits) ----------------------------
+
+#if SURE__ARCH_RISCV_
+    #if defined(__riscv_xlen)
+        #define SURE__ARCH_BITS_ __riscv_xlen
+    #elif defined(__SIZEOF_POINTER__)
+        #define SURE__ARCH_BITS_ (__SIZEOF_POINTER__ * 8)
+    #else
+        #error "Cannot determine RISC-V XLEN"
+    #endif
+#elif SURE__ARCH_X64_ || SURE__ARCH_ARM64_ || SURE__ARCH_PPC64_
+    #define SURE__ARCH_BITS_ 64
+#elif SURE__ARCH_X86_ || SURE__ARCH_ARM32_ || SURE__ARCH_PPC32_ || SURE__ARCH_XTENSA_
+    #define SURE__ARCH_BITS_ 32
+#elif SURE__ARCH_MSP430_
+    #define SURE__ARCH_BITS_ 16
+#elif SURE__ARCH_AVR_
+    #define SURE__ARCH_BITS_ 8
+#endif
+
+
+#if SURE__ARCH_BITS_ != 8 && SURE__ARCH_BITS_ != 16 && SURE__ARCH_BITS_ != 32 && SURE__ARCH_BITS_ != 64
+    #error "Unsupported native word width"
+#endif
+
+
+#if SURE__ARCH_BITS_ == 8
+    #define SURE__ARCH_8BIT_ 1
+#else
+    #define SURE__ARCH_8BIT_ 0
+#endif
+
+#if SURE__ARCH_BITS_ == 16
+    #define SURE__ARCH_16BIT_ 1
+#else
+    #define SURE__ARCH_16BIT_ 0
+#endif
+
+#if SURE__ARCH_BITS_ == 32
+    #define SURE__ARCH_32BIT_ 1
+#else
+    #define SURE__ARCH_32BIT_ 0
+#endif
+
+#if SURE__ARCH_BITS_ == 64
+    #define SURE__ARCH_64BIT_ 1
+#else
+    #define SURE__ARCH_64BIT_ 0
 #endif
 
 

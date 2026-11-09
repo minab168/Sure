@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../BitField.hpp"
+#include "../CE_BitField.hpp"
 
 
 using namespace sure;

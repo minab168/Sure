@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "../BitField.hpp"
+#include "../CE_BitField.hpp"
 
 #include "../../../Contribs/googletest/googletest/include/gtest/internal/gtest-internal.h"
 

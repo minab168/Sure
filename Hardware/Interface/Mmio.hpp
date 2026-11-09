@@ -1,7 +1,7 @@
 #ifndef SURE_HARDWARE_MMIO_INC_HPP_
 #define SURE_HARDWARE_MMIO_INC_HPP_
 
-#include "../../Common/Operations/BitField.hpp"
+#include "../../Common/Operations/CE_BitField.hpp"
 #include "../../Common/Traits/Base.hpp"
 #include "../../Common/Utils/Assert.hpp"
 
@@ -15,7 +15,7 @@ namespace sure::hw {
     };
 
 
-    template<UIntegral T, Size ADDR, MMIOAccessMode ACCESS = MMIOAccessMode::ReadWrite>
+    template<Size ADDR, UIntegral T = UWord, MMIOAccessMode ACCESS = MMIOAccessMode::ReadWrite>
     class MMIO {
         static_assert(
             ADDR % sizeof(T) == 0,

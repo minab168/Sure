@@ -58,16 +58,26 @@ using V_U32 = volatile unsigned int;
 #endif
 
 
-#if SURE__ARCH_64BIT_
-    using IPtr   = I64;
-    using UPtr   = U64;
-    using V_IPtr = volatile I64;
-    using V_UPtr = volatile U64;
-#else 
-    using IPtr   = I32;
-    using UPtr   = U32;
-    using V_IPtr = volatile I32;
-    using V_UPtr = volatile U32;
+#if SURE__ARCH_BITS_ == 64
+    using Word    = I64;
+    using UWord   = U64;
+    using V_Word  = V_I64;
+    using V_UWord = V_U64;
+#elif SURE__ARCH_BITS_ == 32
+    using Word    = I32;
+    using UWord   = U32;
+    using V_Word  = V_I32;
+    using V_UWord = V_U32;
+#elif SURE__ARCH_BITS_ == 16
+    using Word    = I16;
+    using UWord   = U16;
+    using V_Word  = V_I16;
+    using V_UWord = V_U16;
+#else
+    using Word    = I8;
+    using UWord   = U8;
+    using V_Word  = V_I8;
+    using V_UWord = V_U8;
 #endif
 
 
