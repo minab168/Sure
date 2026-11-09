@@ -16,7 +16,7 @@ namespace sure {
       public:
         using Type = T;
 
-        BitField(const U8 offset, const U8 width) noexcept :
+        CONSTEXPR_ BitField(const U8 offset, const U8 width) noexcept :
             _width{width},
             _offset{offset}
         {
