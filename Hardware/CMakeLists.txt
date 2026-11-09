@@ -3,4 +3,7 @@ add_library(Hardware INTERFACE
 )
 
 
-add_subdirectory(Tests)
+
+if(SURE_BUILD_TESTS)
+    add_subdirectory(Tests)
+endif()
