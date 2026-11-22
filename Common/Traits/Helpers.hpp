@@ -215,7 +215,7 @@ inline constexpr bool IsTriviallyDestructible<T&> = true;
 template <typename T>
 inline constexpr bool IsTriviallyDestructible<T&&> = true;
 
-template <typename T, size_t NUM>
+template <typename T, Size NUM>
 inline constexpr bool IsTriviallyDestructible<T[NUM]> = IsTriviallyDestructible<T>;
 
 
